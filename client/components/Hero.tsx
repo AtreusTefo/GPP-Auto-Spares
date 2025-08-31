@@ -34,7 +34,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative h-80 md:h-96 bg-gray-900 overflow-hidden">
+    <section className="relative h-64 sm:h-80 md:h-96 bg-gray-900 overflow-hidden">
       {/* Background images */}
       {slides.map((slide, index) => (
         <div
@@ -49,21 +49,21 @@ export default function Hero() {
       ))}
       
       {/* Content overlay */}
-      <div className="relative z-10 flex items-center justify-between h-full px-4 md:px-8">
+      <div className="relative z-10 flex items-center justify-between h-full px-2 sm:px-4 md:px-8">
         {/* Left arrow */}
         <button 
           onClick={prevSlide}
-          className="text-white hover:text-gray-300 transition-colors p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50"
+          className="text-white hover:text-gray-300 transition-colors p-1 sm:p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 flex-shrink-0"
         >
-          <ChevronLeft size={32} />
+          <ChevronLeft size={24} className="sm:w-8 sm:h-8" />
         </button>
 
         {/* Main content */}
-        <div className="text-center text-white">
-          <h1 className="text-3xl md:text-5xl font-bold font-montserrat mb-4">
+        <div className="text-center text-white px-2 sm:px-4">
+          <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold font-montserrat mb-2 sm:mb-4 leading-tight">
             {slides[currentSlide].title}
           </h1>
-          <p className="text-lg md:text-2xl font-montserrat">
+          <p className="text-sm sm:text-base md:text-xl lg:text-2xl font-montserrat">
             {slides[currentSlide].subtitle}
           </p>
         </div>
@@ -71,9 +71,9 @@ export default function Hero() {
         {/* Right arrow */}
         <button 
           onClick={nextSlide}
-          className="text-white hover:text-gray-300 transition-colors p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50"
+          className="text-white hover:text-gray-300 transition-colors p-1 sm:p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 flex-shrink-0"
         >
-          <ChevronRight size={32} />
+          <ChevronRight size={24} className="sm:w-8 sm:h-8" />
         </button>
       </div>
 

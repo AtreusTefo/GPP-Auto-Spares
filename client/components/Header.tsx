@@ -8,9 +8,11 @@ export default function Header() {
   return (
     <header className="bg-gpp-navy text-white">
       {/* Top bar with contact info */}
-      <div className="bg-gpp-blue px-4 py-1 text-right text-sm">
-        <span className="font-montserrat">📞 (+267) 75363264 / 71235651</span>
-        <span className="ml-4">✉️ gastonma@gmail.com</span>
+      <div className="bg-gpp-blue px-4 py-1 text-center sm:text-right text-xs sm:text-sm">
+        <div className="flex flex-col sm:flex-row sm:justify-end items-center space-y-1 sm:space-y-0">
+          <span className="font-montserrat">📞 (+267) 75363264 / 71235651</span>
+          <span className="sm:ml-4 font-montserrat">✉️ gastonma@gmail.com</span>
+        </div>
       </div>
       
       {/* Main header */}
@@ -22,8 +24,7 @@ export default function Header() {
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F29449c4a506b4f0da87f7d56d9c46785%2Fda0116fa42404c2ebfbf9d24c7d2bf88?format=webp&width=800"
                 alt="GPP Auto Spares Logo"
-                className="w-auto"
-                style={{ height: '98px' }}
+                className="w-auto h-16 sm:h-20 md:h-24"
               />
             </a>
           </div>

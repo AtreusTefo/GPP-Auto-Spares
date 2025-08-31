@@ -16,44 +16,44 @@ const TikTokIcon = ({ size = 20 }) => (
 export default function Footer() {
   return (
     <footer className="bg-gpp-navy text-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {/* Company Info */}
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center mb-4">
+          <div className="col-span-1 sm:col-span-2 md:col-span-1">
+            <div className="flex items-center mb-3 sm:mb-4">
               <div>
-                <h3 className="text-lg font-bold font-montserrat">GPP</h3>
-                <p className="text-sm text-gray-300 font-montserrat">AUTO SPARES</p>
+                <h3 className="text-base sm:text-lg font-bold font-montserrat">GPP</h3>
+                <p className="text-xs sm:text-sm text-gray-300 font-montserrat">AUTO SPARES</p>
               </div>
             </div>
             
             {/* Social Media Icons */}
             <div className="flex space-x-3">
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                <Facebook size={20} />
+                <Facebook size={18} className="sm:w-5 sm:h-5" />
               </a>
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                <TikTokIcon size={20} />
+                <TikTokIcon size={18} />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold font-montserrat mb-4">QUICK LINKS</h4>
-            <ul className="space-y-2">
+            <h4 className="text-base sm:text-lg font-semibold font-montserrat mb-3 sm:mb-4">QUICK LINKS</h4>
+            <ul className="space-y-1 sm:space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   Home
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   About
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   How To Buy
                 </a>
               </li>
@@ -62,15 +62,15 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className="text-lg font-semibold font-montserrat mb-4">LEGAL</h4>
-            <ul className="space-y-2">
+            <h4 className="text-base sm:text-lg font-semibold font-montserrat mb-3 sm:mb-4">LEGAL</h4>
+            <ul className="space-y-1 sm:space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   Privacy Policies
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   Terms and Conditions
                 </a>
               </li>
@@ -79,16 +79,16 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-lg font-semibold font-montserrat mb-4">CONTACT</h4>
-            <p className="text-gray-300 font-montserrat">
+            <h4 className="text-base sm:text-lg font-semibold font-montserrat mb-3 sm:mb-4">CONTACT</h4>
+            <p className="text-gray-300 font-montserrat text-sm sm:text-base">
               gppautospares@gmail.com
             </p>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-600 mt-8 pt-6 text-center">
-          <p className="text-gray-300 text-sm font-montserrat">
+        <div className="border-t border-gray-600 mt-6 sm:mt-8 pt-4 sm:pt-6 text-center">
+          <p className="text-gray-300 text-xs sm:text-sm font-montserrat">
             © 2025 GPP Auto Spares | Website by Tefo Ramokate
           </p>
         </div>
