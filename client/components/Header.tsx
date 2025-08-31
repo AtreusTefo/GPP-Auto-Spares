@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <header className="bg-gpp-navy text-white">
       {/* Top bar with contact info and auth buttons */}
-      <div className="bg-gpp-blue px-2 sm:px-4 py-1 text-xs sm:text-sm">
+      <div className="bg-gpp-blue px-2 sm:px-4 py-1 text-xs sm:text-sm hidden lg:block">
         <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-1 sm:space-y-0">
           {/* Contact Info */}
           <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 text-center sm:text-left w-full sm:w-auto justify-center sm:justify-start">
