@@ -1,9 +1,11 @@
-import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, User, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   return (
     <header className="bg-gpp-navy text-white">
@@ -60,9 +62,53 @@ export default function Header() {
             <button className="hover:text-gray-300 transition-colors" title="Shopping Cart">
               <ShoppingCart size={20} />
             </button>
-            <button className="hover:text-gray-300 transition-colors" title="Profile">
-              <User size={20} />
-            </button>
+            
+            {/* User Menu */}
+            <div className="relative">
+              <button 
+                className="flex items-center space-x-1 hover:text-gray-300 transition-colors" 
+                title="Account"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              >
+                <User size={20} />
+                <ChevronDown size={16} className={`transform transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {/* User Dropdown Menu */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <Link
+                    to="/login"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Create Account
+                  </Link>
+                  <hr className="my-1" />
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    My Orders
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Account Settings
+                  </a>
+                </div>
+              )}
+            </div>
             
             {/* Mobile menu button */}
             <button 
@@ -93,6 +139,21 @@ export default function Header() {
               <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors">
                 About
               </div>
+              <hr className="my-3 border-gray-600" />
+              <Link
+                to="/login"
+                className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Create Account
+              </Link>
             </div>
           </nav>
         )}
