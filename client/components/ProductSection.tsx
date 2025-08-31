@@ -17,11 +17,11 @@ export default function ProductSection({ title, products, backgroundColor = 'bg-
     <section className={`py-8 sm:py-12 ${backgroundColor}`}>
       <div className="container mx-auto px-4">
         {/* Section header */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 space-y-3 sm:space-y-0">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 space-y-3 sm:space-y-0 text-center sm:text-left">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 font-montserrat">
             {title}
           </h2>
-          <button className="bg-gpp-blue text-white px-4 sm:px-6 py-2 rounded-md font-montserrat font-semibold hover:bg-gpp-navy transition-colors text-sm sm:text-base self-start sm:self-auto">
+          <button className="bg-gpp-blue text-white px-4 sm:px-6 py-2 rounded-md font-montserrat font-semibold hover:bg-gpp-navy transition-colors text-sm sm:text-base self-center sm:self-auto">
             View All
           </button>
         </div>

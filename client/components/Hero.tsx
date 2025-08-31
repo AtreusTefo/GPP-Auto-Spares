@@ -59,11 +59,11 @@ export default function Hero() {
         </button>
 
         {/* Main content */}
-        <div className="text-center text-white px-2 sm:px-4">
-          <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold font-montserrat mb-2 sm:mb-4 leading-tight">
+        <div className="text-center text-white px-2 sm:px-4 flex-1 flex flex-col justify-center items-center">
+          <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold font-montserrat mb-2 sm:mb-4 leading-tight text-center">
             {slides[currentSlide].title}
           </h1>
-          <p className="text-sm sm:text-base md:text-xl lg:text-2xl font-montserrat">
+          <p className="text-sm sm:text-base md:text-xl lg:text-2xl font-montserrat text-center">
             {slides[currentSlide].subtitle}
           </p>
         </div>

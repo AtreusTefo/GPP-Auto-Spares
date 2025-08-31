@@ -41,7 +41,7 @@ export default function CategorySection() {
     <section className="py-8 sm:py-12 bg-white">
       <div className="container mx-auto px-2 sm:px-4">
         {/* Section header */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8 text-center sm:text-left">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 font-montserrat">
             Category
           </h2>

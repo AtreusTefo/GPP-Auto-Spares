@@ -14,8 +14,8 @@ export default function Header() {
       <div className="bg-gpp-blue px-2 sm:px-4 py-1 text-xs sm:text-sm">
         <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-1 sm:space-y-0">
           {/* Contact Info */}
-          <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 text-center sm:text-left">
-            <span className="font-montserrat text-xs sm:text-sm flex items-center gap-1"><Phone size={14} className="sm:w-4 sm:h-4" /> (+267) 75363264 / 71235651</span>
+          <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 text-center sm:text-left w-full sm:w-auto justify-center sm:justify-start">
+            <span className="font-montserrat text-xs sm:text-sm flex items-center gap-1 justify-center"><Phone size={14} className="sm:w-4 sm:h-4" /> (+267) 75363264 / 71235651</span>
             <span className="sm:ml-4 font-montserrat text-xs sm:text-sm">✉️ gastonmaks@gmail.com</span>
           </div>
           
