@@ -29,7 +29,7 @@ export default function Footer() {
             
             {/* Social Media Icons */}
             <div className="flex space-x-3">
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="https://www.facebook.com/profile.php?id=61571614956170" className="text-gray-300 hover:text-white transition-colors">
                 <Facebook size={18} className="sm:w-5 sm:h-5" />
               </a>
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
@@ -43,7 +43,7 @@ export default function Footer() {
             <h4 className="text-base sm:text-lg font-semibold font-montserrat mb-3 sm:mb-4">QUICK LINKS</h4>
             <ul className="space-y-1 sm:space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
+                <a href="index.html" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   Home
                 </a>
               </li>

@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, Menu, X, User, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, User, ChevronDown, Phone } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -15,8 +15,8 @@ export default function Header() {
         <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-1 sm:space-y-0">
           {/* Contact Info */}
           <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 text-center sm:text-left">
-            <span className="font-montserrat text-xs sm:text-sm">📞 (+267) 75363264 / 71235651</span>
-            <span className="sm:ml-4 font-montserrat text-xs sm:text-sm">✉️ gastonma@gmail.com</span>
+            <span className="font-montserrat text-xs sm:text-sm flex items-center gap-1"><Phone size={14} className="sm:w-4 sm:h-4" /> (+267) 75363264 / 71235651</span>
+            <span className="sm:ml-4 font-montserrat text-xs sm:text-sm">✉️ gastonmaks@gmail.com</span>
           </div>
           
           {/* Auth Buttons - Only show when not authenticated */}
@@ -45,7 +45,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0">
-            <a href="/" className="hover:opacity-80 transition-opacity">
+            <a href="index.html" className="hover:opacity-80 transition-opacity">
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F29449c4a506b4f0da87f7d56d9c46785%2Fda0116fa42404c2ebfbf9d24c7d2bf88?format=webp&width=800"
                 alt="GPP Auto Spares Logo"
@@ -56,7 +56,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex space-x-4 xl:space-x-8">
-            <a href="/" className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base">
+            <a href="index.html" className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base">
               Home
             </a>
             <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base cursor-pointer">
@@ -151,7 +151,7 @@ export default function Header() {
         {isMobileMenuOpen && (
           <nav className="lg:hidden mt-3 sm:mt-4 border-t border-gray-600 pt-3 sm:pt-4">
             <div className="flex flex-col space-y-2 sm:space-y-3">
-              <a href="/" className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1">
+              <a href="index.html" className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1">
                 Home
               </a>
               <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1 cursor-pointer">

@@ -27,14 +27,14 @@ function CategoryCard({ name, imageUrl, bgColor = 'bg-gray-200' }: CategoryCardP
 
 export default function CategorySection() {
   const categories = [
-    { name: 'Suspension Parts', bgColor: 'bg-blue-100' },
-    { name: 'Electrical Equipment', bgColor: 'bg-yellow-100' },
-    { name: 'Interiors', bgColor: 'bg-green-100' },
-    { name: 'Engines', bgColor: 'bg-red-100' },
-    { name: 'Exteriors', bgColor: 'bg-purple-100' },
-    { name: 'Engine Parts', bgColor: 'bg-orange-100' },
-    { name: 'Gearboxes', bgColor: 'bg-pink-100' },
-    { name: 'Cooling Systems', bgColor: 'bg-teal-100' },
+    { name: 'Suspension Parts', bgColor: 'bg-blue-100', imageUrl: '/Images/Suspension Parts.jpg' },
+    { name: 'Electrical Equipment', bgColor: 'bg-yellow-100', imageUrl: '/Images/Electrical Equipment.jpg' },
+    { name: 'Interiors', bgColor: 'bg-green-100', imageUrl: '/Images/Interiors.jpg' },
+    { name: 'Engines', bgColor: 'bg-red-100', imageUrl: '/Images/Engines.jpg' },
+    { name: 'Exteriors', bgColor: 'bg-purple-100', imageUrl: '/Images/Exteriors.jpg' },
+    { name: 'Engine Parts', bgColor: 'bg-orange-100', imageUrl: '/Images/Engine Parts.jpg' },
+    { name: 'Gearboxes', bgColor: 'bg-pink-100', imageUrl: '/Images/Gearboxes.jpg' },
+    { name: 'Cooling Systems', bgColor: 'bg-teal-100', imageUrl: '/Images/Cooling Systems.png' },
   ];
 
   return (
@@ -54,6 +54,7 @@ export default function CategorySection() {
               key={index}
               name={category.name}
               bgColor={category.bgColor}
+              imageUrl={category.imageUrl}
             />
           ))}
         </div>

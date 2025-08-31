@@ -50,10 +50,10 @@ export default function Hero() {
       
       {/* Content overlay */}
       <div className="relative z-10 flex items-center justify-between h-full px-2 sm:px-4 md:px-8">
-        {/* Left arrow */}
+        {/* Left arrow - Hidden on mobile and tablet for touch swipe */}
         <button 
           onClick={prevSlide}
-          className="text-white hover:text-gray-300 transition-colors p-1 sm:p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 flex-shrink-0"
+          className="hidden lg:block text-white hover:text-gray-300 transition-colors p-1 sm:p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 flex-shrink-0"
         >
           <ChevronLeft size={24} className="sm:w-8 sm:h-8" />
         </button>
@@ -68,10 +68,10 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Right arrow */}
+        {/* Right arrow - Hidden on mobile and tablet for touch swipe */}
         <button 
           onClick={nextSlide}
-          className="text-white hover:text-gray-300 transition-colors p-1 sm:p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 flex-shrink-0"
+          className="hidden lg:block text-white hover:text-gray-300 transition-colors p-1 sm:p-2 bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 flex-shrink-0"
         >
           <ChevronRight size={24} className="sm:w-8 sm:h-8" />
         </button>
