@@ -18,16 +18,21 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F29449c4a506b4f0da87f7d56d9c46785%2Fda0116fa42404c2ebfbf9d24c7d2bf88?format=webp&width=800"
-              alt="GPP Auto Spares Logo"
-              className="w-auto"
-              style={{ height: '98px' }}
-            />
+            <a href="/" className="hover:opacity-80 transition-opacity">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F29449c4a506b4f0da87f7d56d9c46785%2Fda0116fa42404c2ebfbf9d24c7d2bf88?format=webp&width=800"
+                alt="GPP Auto Spares Logo"
+                className="w-auto"
+                style={{ height: '98px' }}
+              />
+            </a>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
+            <a href="/" className="font-montserrat font-semibold hover:text-gray-300 transition-colors">
+              Home
+            </a>
             <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors">
               Category
             </div>
@@ -72,6 +77,9 @@ export default function Header() {
         {isMobileMenuOpen && (
           <nav className="md:hidden mt-4 border-t border-gray-600 pt-4">
             <div className="flex flex-col space-y-3">
+              <a href="/" className="font-montserrat font-semibold hover:text-gray-300 transition-colors">
+                Home
+              </a>
               <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors">
                 Category
               </div>
