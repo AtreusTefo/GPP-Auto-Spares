@@ -6,14 +6,37 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // TODO: Replace with actual auth state
 
   return (
     <header className="bg-gpp-navy text-white">
-      {/* Top bar with contact info */}
-      <div className="bg-gpp-blue px-4 py-1 text-center sm:text-right text-xs sm:text-sm">
-        <div className="flex flex-col sm:flex-row sm:justify-end items-center space-y-1 sm:space-y-0">
-          <span className="font-montserrat">📞 (+267) 75363264 / 71235651</span>
-          <span className="sm:ml-4 font-montserrat">✉️ gastonma@gmail.com</span>
+      {/* Top bar with contact info and auth buttons */}
+      <div className="bg-gpp-blue px-4 py-1 text-xs sm:text-sm">
+        <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-1 sm:space-y-0">
+          {/* Contact Info */}
+          <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0">
+            <span className="font-montserrat">📞 (+267) 75363264 / 71235651</span>
+            <span className="sm:ml-4 font-montserrat">✉️ gastonma@gmail.com</span>
+          </div>
+          
+          {/* Auth Buttons - Only show when not authenticated */}
+          {!isAuthenticated && (
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link
+                to="/login"
+                className="font-montserrat font-medium hover:text-gray-200 transition-colors px-2 py-1 rounded"
+              >
+                Sign In
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link
+                to="/signup"
+                className="font-montserrat font-medium hover:text-gray-200 transition-colors px-2 py-1 rounded"
+              >
+                Create Account
+              </Link>
+            </div>
+          )}
         </div>
       </div>
       
@@ -63,52 +86,56 @@ export default function Header() {
               <ShoppingCart size={20} />
             </button>
             
-            {/* User Menu */}
-            <div className="relative">
-              <button 
-                className="flex items-center space-x-1 hover:text-gray-300 transition-colors" 
-                title="Account"
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              >
-                <User size={20} />
-                <ChevronDown size={16} className={`transform transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {/* User Dropdown Menu */}
-              {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  <Link
-                    to="/login"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    Create Account
-                  </Link>
-                  <hr className="my-1" />
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    My Orders
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    Account Settings
-                  </a>
-                </div>
-              )}
-            </div>
+            {/* User Menu - Only show when authenticated */}
+            {isAuthenticated && (
+              <div className="relative">
+                <button 
+                  className="flex items-center space-x-1 hover:text-gray-300 transition-colors" 
+                  title="Account"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                >
+                  <User size={20} />
+                  <ChevronDown size={16} className={`transform transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {/* User Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      My Profile
+                    </a>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      My Orders
+                    </a>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Account Settings
+                    </a>
+                    <hr className="my-1" />
+                    <button
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-montserrat"
+                      onClick={() => {
+                        setIsAuthenticated(false);
+                        setIsUserMenuOpen(false);
+                      }}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Mobile menu button */}
             <button 
@@ -139,21 +166,60 @@ export default function Header() {
               <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors">
                 About
               </div>
+              
+              {/* Mobile Auth Section */}
               <hr className="my-3 border-gray-600" />
-              <Link
-                to="/login"
-                className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/signup"
-                className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Create Account
-              </Link>
+              {!isAuthenticated ? (
+                <>
+                  <Link
+                    to="/login"
+                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Create Account
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <a
+                    href="#"
+                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    My Profile
+                  </a>
+                  <a
+                    href="#"
+                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    My Orders
+                  </a>
+                  <a
+                    href="#"
+                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Account Settings
+                  </a>
+                  <button
+                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-left"
+                    onClick={() => {
+                      setIsAuthenticated(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Sign Out
+                  </button>
+                </>
+              )}
             </div>
           </nav>
         )}
