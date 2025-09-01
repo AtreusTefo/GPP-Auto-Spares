@@ -15,10 +15,10 @@ export default function Index() {
   ];
 
   const usedProducts = [
-    { productCode: 'P8000.00', description: 'MAZDA AXELA 1.5 1.8L ENGINE' },
-    { productCode: 'P8000.00', description: 'VW POLO 6R 1.6T ENGINE' },
-    { productCode: 'P1000.00 EACH', description: 'VW POLO 6R SIDE MIRRORS' },
-    { productCode: 'P850.00', description: 'VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP' },
+    { productCode: 'P8000.00', description: 'MAZDA AXELA 1.5 1.8L ENGINE', imageUrl: '/Images/MAZDA AXELA 1.5 1.8 L ENGINE.png' },
+    { productCode: 'P8000.00', description: 'VW POLO 6R 1.6T ENGINE', imageUrl: '/Images/VW POLO 6R 1.6T ENGINE.png' },
+    { productCode: 'P1000.00 EACH', description: 'VW POLO 6R SIDE MIRRORS', imageUrl: '/Images/VW 6R SIDE MIRRORS.png' },
+    { productCode: 'P850.00', description: 'VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP', imageUrl: '/Images/VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP.png' },
   ];
 
   const brandNewProducts = [
