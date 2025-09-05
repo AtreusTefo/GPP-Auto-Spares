@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ProductSection from '../components/ProductSection';
-import CategoryGrid from '../components/CategoryGrid';
+import PartsGrid from '../components/PartsGrid';
 import CategorySection from '../components/CategorySection';
 import Footer from '../components/Footer';
 
@@ -33,7 +33,7 @@ export default function Index() {
       <Header />
       <Hero />
       
-      <CategoryGrid
+      <PartsGrid
         title="Car Parts"
         backgroundColor="bg-gpp-light-blue"
       />
