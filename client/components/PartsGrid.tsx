@@ -33,12 +33,12 @@ interface PartsGridProps {
 export default function PartsGrid({ title, backgroundColor = 'bg-gray-50' }: PartsGridProps) {
   const categories = [
     { name: 'Engine with Transmission', bgColor: 'bg-blue-100', imageUrl: '/Images/golf engine.png' },
-    { name: 'Head Lamps', bgColor: 'bg-yellow-100' },
+    { name: 'Head Lamps', bgColor: 'bg-yellow-100', imageUrl: '/Images/Head Lamps.png' },
     { name: 'Alternator', bgColor: 'bg-green-100', imageUrl: '/Images/Alternator.png' },
-    { name: 'Fender', bgColor: 'bg-red-100' },
+    { name: 'Fender', bgColor: 'bg-red-100', imageUrl: '/Images/Fender.png' },
     { name: 'Side Mirrors', bgColor: 'bg-purple-100', imageUrl: '/Images/VW 6R SIDE MIRRORS.png' },
     { name: 'Tail Lamps', bgColor: 'bg-orange-100', imageUrl: '/Images/Tail Lamps.png' },
-    { name: 'Bumper', bgColor: 'bg-pink-100' },
+    { name: 'Bumper', bgColor: 'bg-pink-100', imageUrl: '/Images/Bumper.png' },
     { name: 'Grill', bgColor: 'bg-teal-100', imageUrl: '/Images/Grill.png' },
   ];
 
