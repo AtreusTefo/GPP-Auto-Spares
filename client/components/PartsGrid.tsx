@@ -1,13 +1,18 @@
 interface CategoryCardProps {
   name: string;
   bgColor?: string;
+  imageUrl?: string;
 }
 
-function CategoryCard({ name, bgColor = 'bg-gray-200' }: CategoryCardProps) {
+function CategoryCard({ name, bgColor = 'bg-gray-200', imageUrl }: CategoryCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
       <div className={`h-20 sm:h-24 ${bgColor} flex items-center justify-center relative`}>
-        <div className="text-gray-600 text-xl sm:text-2xl">🔧</div>
+        {imageUrl ? (
+          <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="text-gray-600 text-xl sm:text-2xl">🔧</div>
+        )}
         {/* Overlay gradient for better text readability */}
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       </div>
@@ -20,21 +25,21 @@ function CategoryCard({ name, bgColor = 'bg-gray-200' }: CategoryCardProps) {
   );
 }
 
-interface CategoryGridProps {
+interface PartsGridProps {
   title: string;
   backgroundColor?: string;
 }
 
-export default function CategoryGrid({ title, backgroundColor = 'bg-gray-50' }: CategoryGridProps) {
+export default function PartsGrid({ title, backgroundColor = 'bg-gray-50' }: PartsGridProps) {
   const categories = [
-    { name: 'Engine with Transmission', bgColor: 'bg-blue-100' },
+    { name: 'Engine with Transmission', bgColor: 'bg-blue-100', imageUrl: '/Images/golf engine.png' },
     { name: 'Head Lamps', bgColor: 'bg-yellow-100' },
-    { name: 'Doors', bgColor: 'bg-green-100' },
+    { name: 'Alternator', bgColor: 'bg-green-100', imageUrl: '/Images/Alternator.png' },
     { name: 'Fender', bgColor: 'bg-red-100' },
-    { name: 'Side Mirrors', bgColor: 'bg-purple-100' },
-    { name: 'Tail Lamps', bgColor: 'bg-orange-100' },
+    { name: 'Side Mirrors', bgColor: 'bg-purple-100', imageUrl: '/Images/VW 6R SIDE MIRRORS.png' },
+    { name: 'Tail Lamps', bgColor: 'bg-orange-100', imageUrl: '/Images/Tail Lamps.png' },
     { name: 'Bumper', bgColor: 'bg-pink-100' },
-    { name: 'Grill', bgColor: 'bg-teal-100' },
+    { name: 'Grill', bgColor: 'bg-teal-100', imageUrl: '/Images/Grill.png' },
   ];
 
   return (
@@ -54,6 +59,7 @@ export default function CategoryGrid({ title, backgroundColor = 'bg-gray-50' }: 
               key={index}
               name={category.name}
               bgColor={category.bgColor}
+              imageUrl={category.imageUrl}
             />
           ))}
         </div>
