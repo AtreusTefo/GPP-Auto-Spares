@@ -78,7 +78,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-4 py-4 flex items-center justify-between sticky top-0 z-30">
+      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center space-x-3">
           <button
             onClick={toggleSidebar}
@@ -215,9 +215,27 @@ const AdminDashboard: React.FC = () => {
         </div>
       </aside>
 
+      {/* Desktop Header */}
+      <div className="hidden lg:block lg:ml-64 bg-white border-b border-gray-200 px-6 py-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900 font-montserrat">Admin Panel</h1>
+            <p className="text-sm text-gray-500 font-montserrat">GPP Auto Spares</p>
+          </div>
+          <Link 
+            to="/" 
+            className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Back to Main Site"
+          >
+            <Home size={16} className="mr-2" />
+            Main Site
+          </Link>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="lg:ml-64">
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-6 lg:px-6 lg:py-3">
           <Outlet />
         </div>
       </div>

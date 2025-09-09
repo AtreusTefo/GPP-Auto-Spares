@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Menu, X, User, ShoppingCart, Phone, Mail, MapPin, ChevronDown, Shield, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { isAuthenticated, isOwner, user, logout } = useAuth();
+  const { summary } = useCart();
   const navigate = useNavigate();
 
   return (
@@ -84,9 +86,18 @@ export default function Header() {
             >
               <Search size={18} className="sm:w-5 sm:h-5" />
             </button>
-            <button className="hover:text-gray-600 transition-colors p-1" title="Shopping Cart">
+            <Link 
+              to="/cart" 
+              className="relative hover:text-gray-600 transition-colors p-1" 
+              title="Shopping Cart"
+            >
               <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
-            </button>
+              {summary?.itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  {summary?.itemCount > 99 ? '99+' : summary?.itemCount}
+                </span>
+              )}
+            </Link>
             
             {/* User Menu - Only show when authenticated */}
             {isAuthenticated && (

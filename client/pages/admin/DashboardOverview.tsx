@@ -164,12 +164,12 @@ const RecentActivity: React.FC = () => {
 
 const DashboardOverview: React.FC = () => {
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-4">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 lg:mb-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-montserrat">Dashboard Overview</h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">Welcome back! Here's what's happening with your store.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-gray-900 font-montserrat">Dashboard Overview</h1>
+          <p className="text-sm text-gray-600 font-montserrat mt-1 lg:mt-0.5">Monitor your business performance</p>
         </div>
         <div className="text-xs sm:text-sm text-gray-500">
           Last updated: {new Date().toLocaleString()}
@@ -177,7 +177,7 @@ const DashboardOverview: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4">
         <KPICard
           title="Total Products"
           value={247}
@@ -209,13 +209,13 @@ const DashboardOverview: React.FC = () => {
       </div>
 
       {/* Charts and Activity */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-4">
         <SimpleBarChart />
         <RecentActivity />
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center space-x-3">
             <Users size={20} className="text-gpp-blue flex-shrink-0" />
