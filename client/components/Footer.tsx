@@ -1,4 +1,5 @@
 import { Facebook } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Custom TikTok icon component
 const TikTokIcon = ({ size = 20 }) => (
@@ -43,14 +44,14 @@ export default function Footer() {
             <h4 className="text-base sm:text-lg font-semibold font-montserrat mb-3 sm:mb-4">QUICK LINKS</h4>
             <ul className="space-y-1 sm:space-y-2">
               <li>
-                <a href="index.html" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
+                <Link to="/" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   About
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
@@ -65,14 +66,14 @@ export default function Footer() {
             <h4 className="text-base sm:text-lg font-semibold font-montserrat mb-3 sm:mb-4">LEGAL</h4>
             <ul className="space-y-1 sm:space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
+                <Link to="/privacy-policies" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   Privacy Policies
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
+                <Link to="/terms-and-conditions" className="text-gray-300 hover:text-white transition-colors font-montserrat text-sm sm:text-base">
                   Terms and Conditions
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

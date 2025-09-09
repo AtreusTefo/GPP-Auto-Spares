@@ -1,17 +1,19 @@
-import { Search, ShoppingCart, Menu, X, User, ChevronDown, Phone } from 'lucide-react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Menu, X, User, ShoppingCart, Phone, Mail, MapPin, ChevronDown, Shield, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // TODO: Replace with actual auth state
+  const { isAuthenticated, isOwner, user, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
-    <header className="bg-gpp-navy text-white">
+    <header className="bg-white text-black">
       {/* Top bar with contact info and auth buttons */}
-      <div className="bg-gpp-blue px-2 sm:px-4 py-1 text-xs sm:text-sm hidden lg:block">
+      <div className="bg-gpp-blue px-2 sm:px-4 py-1 text-xs sm:text-sm hidden lg:block text-white">
         <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-1 sm:space-y-0">
           {/* Contact Info */}
           <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 text-center sm:text-left w-full sm:w-auto justify-center sm:justify-start">
@@ -45,30 +47,30 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0">
-            <a href="index.html" className="hover:opacity-80 transition-opacity">
+            <Link to="/" className="hover:opacity-80 transition-opacity">
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F29449c4a506b4f0da87f7d56d9c46785%2Fda0116fa42404c2ebfbf9d24c7d2bf88?format=webp&width=800"
                 alt="GPP Auto Spares Logo"
                 className="w-auto h-12 sm:h-16 md:h-20 lg:h-24"
               />
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex space-x-4 xl:space-x-8">
-            <a href="index.html" className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base">
+            <Link to="/" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base">
               Home
-            </a>
-            <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base cursor-pointer">
+            </Link>
+            <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base cursor-pointer">
               Category
             </div>
-            <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base cursor-pointer">
+            <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base cursor-pointer">
               How To Buy
             </div>
-            <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base cursor-pointer">
+            <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base cursor-pointer">
               Contact Us
             </div>
-            <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm xl:text-base cursor-pointer">
+            <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base cursor-pointer">
               About
             </div>
           </nav>
@@ -76,13 +78,13 @@ export default function Header() {
           {/* Icons */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <button 
-              className="hover:text-gray-300 transition-colors p-1"
+              className="hover:text-gray-600 transition-colors p-1"
               onClick={() => setIsSearchOpen(true)}
               title="Search"
             >
               <Search size={18} className="sm:w-5 sm:h-5" />
             </button>
-            <button className="hover:text-gray-300 transition-colors p-1" title="Shopping Cart">
+            <button className="hover:text-gray-600 transition-colors p-1" title="Shopping Cart">
               <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
             </button>
             
@@ -90,7 +92,7 @@ export default function Header() {
             {isAuthenticated && (
               <div className="relative">
                 <button 
-                  className="flex items-center space-x-1 hover:text-gray-300 transition-colors" 
+                  className="flex items-center space-x-1 hover:text-gray-600 transition-colors" 
                   title="Account"
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 >
@@ -101,6 +103,17 @@ export default function Header() {
                 {/* User Dropdown Menu */}
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                    {isOwner && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 font-montserrat transition-colors"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <hr className="my-1 border-gray-200" />
                     <a
                       href="#"
                       className="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 font-montserrat transition-colors"
@@ -124,12 +137,14 @@ export default function Header() {
                     </a>
                     <hr className="my-1 border-gray-200" />
                     <button
-                      className="block w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 font-montserrat transition-colors"
                       onClick={() => {
-                        setIsAuthenticated(false);
+                        logout();
                         setIsUserMenuOpen(false);
+                        navigate('/');
                       }}
+                      className="flex items-center w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 font-montserrat transition-colors"
                     >
+                      <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </button>
                   </div>
@@ -139,7 +154,7 @@ export default function Header() {
             
             {/* Mobile menu button */}
             <button 
-              className="lg:hidden hover:text-gray-300 transition-colors p-1"
+              className="lg:hidden hover:text-gray-600 transition-colors p-1"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <Menu size={20} className="sm:w-6 sm:h-6" />}
@@ -149,38 +164,38 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <nav className="lg:hidden mt-3 sm:mt-4 border-t border-gray-600 pt-3 sm:pt-4">
+          <nav className="lg:hidden mt-3 sm:mt-4 border-t border-gray-300 pt-3 sm:pt-4">
             <div className="flex flex-col space-y-2 sm:space-y-3">
-              <a href="index.html" className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1">
+              <Link to="/" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1">
                 Home
-              </a>
-              <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              </Link>
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
                 Category
               </div>
-              <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
                 How To Buy
               </div>
-              <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
                 Contact Us
               </div>
-              <div className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
                 About
               </div>
               
               {/* Mobile Auth Section */}
-              <hr className="my-2 sm:my-3 border-gray-600" />
+              <hr className="my-2 sm:my-3 border-gray-300" />
               {!isAuthenticated ? (
                 <>
                   <Link
                     to="/login"
-                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/signup"
-                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Create Account
@@ -188,34 +203,46 @@ export default function Header() {
                 </>
               ) : (
                 <>
+                  {isOwner && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Shield className="h-4 w-4 mr-2" />
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <a
                     href="#"
-                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     My Profile
                   </a>
                   <a
                     href="#"
-                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     My Orders
                   </a>
                   <a
                     href="#"
-                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Account Settings
                   </a>
                   <button
-                    className="font-montserrat font-semibold hover:text-gray-300 transition-colors text-left text-sm sm:text-base py-1"
                     onClick={() => {
-                      setIsAuthenticated(false);
+                      logout();
                       setIsMobileMenuOpen(false);
+                      navigate('/');
                     }}
+                    className="flex items-center font-montserrat font-semibold hover:text-gray-600 transition-colors text-left text-sm sm:text-base py-1"
                   >
+                    <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </button>
                 </>

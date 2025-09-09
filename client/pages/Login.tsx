@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginFormData {
   email: string;
@@ -10,6 +11,7 @@ interface LoginFormData {
 interface FormErrors {
   email?: string;
   password?: string;
+  general?: string;
 }
 
 export default function Login() {
@@ -20,6 +22,18 @@ export default function Login() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const { login, isAuthenticated, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !loading) {
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, loading, navigate, location]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -58,19 +72,27 @@ export default function Login() {
     if (!validateForm()) return;
     
     setIsLoading(true);
+    setErrors(prev => ({ ...prev, general: undefined }));
     
     try {
-      // TODO: Implement actual login logic
-      console.log('Login attempt:', formData);
+      const success = await login(formData.email, formData.password);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Handle successful login
-      alert('Login successful!');
+      if (success) {
+        // Navigation will be handled by useEffect
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
+      } else {
+        setErrors(prev => ({ 
+          ...prev, 
+          general: 'Invalid email or password. Please check your credentials and try again.' 
+        }));
+      }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Login failed. Please try again.');
+      setErrors(prev => ({ 
+        ...prev, 
+        general: 'An error occurred during login. Please try again.' 
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -103,6 +125,25 @@ export default function Login() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
+          {/* General Error Message */}
+          {errors.general && (
+            <div className="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
+              <div className="flex">
+                <AlertCircle className="h-5 w-5 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-red-700 font-montserrat">
+                  {errors.general}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Owner Login Hint */}
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-md p-4">
+            <div className="text-sm text-blue-700 font-montserrat">
+              <strong>Admin Access:</strong> Use owner@gppwebsite.com / admin123 to access the admin dashboard.
+            </div>
+          </div>
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email Field */}
             <div>

@@ -65,6 +65,7 @@ export default {
         "gpp-light-blue": "hsl(var(--gpp-light-blue))",
         "gpp-beige": "hsl(var(--gpp-beige))",
         "gpp-gray": "hsl(var(--gpp-gray))",
+        "gpp-red": "hsl(var(--gpp-red))",
       },
       borderRadius: {
         lg: "var(--radius)",
