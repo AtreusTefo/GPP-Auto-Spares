@@ -21,6 +21,7 @@ import AddEditProduct from "./pages/admin/AddEditProduct";
 import Orders from "./pages/admin/Orders";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import { ProductsProvider } from "./contexts/ProductsContext";
 import Cart from "./pages/Cart";
 import MyProfile from "./pages/MyProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -33,7 +34,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <CartProvider>
+        <ProductsProvider>
+          <CartProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -65,7 +67,8 @@ const App = () => (
             {/* WhatsApp Chat Button - appears on all pages */}
             <WhatsAppChatButton />
           </BrowserRouter>
-        </CartProvider>
+          </CartProvider>
+        </ProductsProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
