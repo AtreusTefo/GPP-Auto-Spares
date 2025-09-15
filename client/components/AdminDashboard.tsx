@@ -42,19 +42,14 @@ const AdminDashboard: React.FC = () => {
     },
     {
       name: 'Products',
-      path: '/admin/products',
+      path: '/admin/products-management',
       icon: Package,
       description: 'Manage product listings'
     },
-    {
-      name: 'Pricing',
-      path: '/admin/pricing',
-      icon: DollarSign,
-      description: 'Set and edit prices'
-    },
+
     {
       name: 'Add Product',
-      path: '/admin/products/add',
+      path: '/admin/add-product',
       icon: Plus,
       description: 'Create new listing'
     },

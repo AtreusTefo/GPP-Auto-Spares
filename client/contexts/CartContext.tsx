@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 
-// API base URL
-const API_BASE_URL = 'http://localhost:3000/api';
+// API base URL - use current host in development, fallback to localhost:3000 for production
+const API_BASE_URL = import.meta.env.DEV 
+  ? `${window.location.protocol}//${window.location.host}/api`
+  : 'http://localhost:3000/api';
 
 // API helper functions
 const apiCall = async (endpoint: string, options: RequestInit = {}) => {

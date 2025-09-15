@@ -52,55 +52,7 @@ const KPICard: React.FC<KPICardProps> = ({ title, value, change, icon, color }) 
   );
 };
 
-const SimpleBarChart: React.FC = () => {
-  const data = [
-    { month: 'Jan', listings: 45 },
-    { month: 'Feb', listings: 52 },
-    { month: 'Mar', listings: 48 },
-    { month: 'Apr', listings: 61 },
-    { month: 'May', listings: 55 },
-    { month: 'Jun', listings: 67 },
-  ];
 
-  const maxValue = Math.max(...data.map(d => d.listings));
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 font-montserrat">Listings Over Time</h3>
-      <div 
-        className="flex items-end space-x-2 sm:space-x-4 h-48 sm:h-64 overflow-x-auto"
-        role="img"
-        aria-label="Bar chart showing listings over time from January to June"
-      >
-        {data.map((item, index) => {
-          const height = (item.listings / maxValue) * (window.innerWidth < 640 ? 160 : 200);
-          return (
-            <div key={index} className="flex-1 min-w-[40px] flex flex-col items-center">
-              <div 
-                className="w-full bg-gpp-blue rounded-t-md transition-all duration-300 hover:bg-gpp-navy cursor-pointer relative group touch-manipulation focus:outline-none focus:ring-2 focus:ring-gpp-blue focus:ring-offset-2"
-                style={{ height: `${height}px` }}
-                role="button"
-                tabIndex={0}
-                aria-label={`${item.month}: ${item.listings} listings`}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    // Handle bar click if needed
-                  }
-                }}
-              >
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity z-10">
-                  {item.listings}
-                </div>
-              </div>
-              <p className="text-xs sm:text-sm text-gray-600 mt-2 font-montserrat" aria-hidden="true">{item.month}</p>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
 
 const RecentActivity: React.FC = () => {
   const activities = [
@@ -208,9 +160,8 @@ const DashboardOverview: React.FC = () => {
         />
       </div>
 
-      {/* Charts and Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-4">
-        <SimpleBarChart />
+      {/* Activity */}
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-4">
         <RecentActivity />
       </div>
 

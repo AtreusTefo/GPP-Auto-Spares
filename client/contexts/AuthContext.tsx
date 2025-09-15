@@ -6,6 +6,7 @@ interface User {
   name: string;
   role: 'owner' | 'user';
   isVerified: boolean;
+  token?: string;
 }
 
 interface AuthContextType {
@@ -46,7 +47,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const parsedUser = JSON.parse(storedUser);
         // Verify token is still valid (in production, verify with backend)
         if (parsedUser.role === 'owner') {
-          setUser(parsedUser);
+          // Ensure the user object has the token from localStorage
+          const userWithToken = { ...parsedUser, token: storedToken };
+          setUser(userWithToken);
         }
       } catch (error) {
         // Clear invalid stored data
@@ -67,8 +70,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       // Check owner credentials
       if (email === OWNER_CREDENTIALS.email && password === OWNER_CREDENTIALS.password) {
-        const authUser = OWNER_CREDENTIALS.user;
         const authToken = `token_${Date.now()}_${Math.random()}`; // Mock token
+        const authUser = { ...OWNER_CREDENTIALS.user, token: authToken };
         
         setUser(authUser);
         localStorage.setItem('auth_user', JSON.stringify(authUser));

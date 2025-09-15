@@ -3,49 +3,42 @@ import { ShoppingCart, Plus } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/use-toast';
+import { Product } from '../../shared/types';
 
 interface ProductCardProps {
-  productCode: string;
-  description: string;
-  imageUrl?: string;
-  price?: number;
-  category?: string;
-  inStock?: boolean;
+  product: Product;
+  viewMode?: 'grid' | 'list';
 }
 
 export default function ProductCard({ 
-  productCode, 
-  description, 
-  imageUrl, 
-  price = 0, 
-  category, 
-  inStock = true 
+  product,
+  viewMode = 'grid'
 }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
   
-  // Create a simple slug from product code for the URL
-  const productSlug = productCode.replace(/\s+/g, '-').toLowerCase();
+  // Create a simple slug from product title for the URL
+  const productSlug = product.title.replace(/\s+/g, '-').toLowerCase();
   
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation when clicking the button
     e.stopPropagation();
     
-    const product = {
-      id: productCode,
-      productCode,
-      description,
-      price,
-      imageUrl,
-      category,
-      inStock
+    const cartProduct = {
+      id: product.id,
+      productCode: product.id,
+      description: product.title,
+      price: product.price,
+      imageUrl: product.image,
+      category: product.category,
+      inStock: product.stock > 0
     };
     
-    const success = await addToCart(product, 1);
+    const success = await addToCart(cartProduct, 1);
     if (success) {
       toast({
         title: "Added to cart",
-        description: `${description} has been added to your cart`
+        description: `${product.title} has been added to your cart`
       });
     } else {
       toast({
@@ -64,12 +57,12 @@ export default function ProductCard({
   };
 
   return (
-    <Link to={`/product/${productSlug}`} className="block">
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+    <Link to={`/product/${productSlug}`} className="block group">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group-hover:scale-[1.02]">
         {/* Product image placeholder */}
-        <div className="h-28 sm:h-32 bg-gray-200 flex items-center justify-center relative">
-          {imageUrl ? (
-            <img src={imageUrl} alt={description} className="w-full h-full object-cover" />
+        <div className="h-32 sm:h-36 md:h-40 bg-gray-200 flex items-center justify-center relative">
+          {product.image ? (
+            <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
           ) : (
             <div className="text-gray-500 text-xs sm:text-sm font-montserrat">No Image</div>
           )}
@@ -78,42 +71,39 @@ export default function ProductCard({
         </div>
 
         {/* Product details */}
-        <div className="p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-gray-600 font-montserrat font-semibold mb-1">
-            {productCode}
-          </p>
-          <p className="text-xs sm:text-sm text-gray-800 font-montserrat leading-tight mb-2">
-            {description}
+        <div className="p-4 sm:p-5">
+          <p className="text-sm sm:text-base text-gray-800 font-montserrat leading-tight mb-3 line-clamp-2">
+            {product.title}
           </p>
           
           {/* Price and Add to Cart */}
-          <div className="flex items-center justify-between mt-3">
-            <div className="flex flex-col">
-              {price > 0 && (
-                <span className="text-sm sm:text-base font-bold text-gray-900">
-                  {formatPrice(price)}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col flex-1 mr-3">
+              {product.price > 0 && (
+                <span className="text-base sm:text-lg font-bold text-gray-900">
+                  {formatPrice(product.price)}
                 </span>
               )}
-              {category && (
-                <span className="text-xs text-gray-500">
-                  {category}
+              {product.category && (
+                <span className="text-xs sm:text-sm text-gray-500 mt-1">
+                  {product.category}
                 </span>
               )}
             </div>
             
-            {inStock && price > 0 && (
+            {product.stock > 0 && product.price > 0 && (
               <Button
                 size="sm"
                 onClick={handleAddToCart}
-                className="flex items-center space-x-1 text-xs"
+                className="flex items-center space-x-1 text-sm px-3 py-2 min-h-[40px] touch-manipulation"
               >
-                <Plus className="h-3 w-3" />
+                <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Add</span>
               </Button>
             )}
             
-            {!inStock && (
-              <span className="text-xs text-red-500 font-medium">
+            {product.stock === 0 && (
+              <span className="text-sm text-red-500 font-medium px-2 py-1 bg-red-50 rounded">
                 Out of Stock
               </span>
             )}

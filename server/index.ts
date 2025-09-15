@@ -15,6 +15,8 @@ import {
   removePromoCode,
   validateCart
 } from './routes/cart';
+import { getProfile, updateProfile, uploadProfilePicture, changePassword, getSettings, updateSettings, getActivityLogs, deleteAccount } from './routes/profile';
+import { authenticate, requireVerified, validateProfileUpdate, validatePasswordChange, rateLimit } from './middleware/auth';
 
 export function createServer() {
   const app = express();
@@ -44,6 +46,16 @@ export function createServer() {
   app.post('/api/cart/promo-code', applyPromoCode);
   app.delete('/api/cart/promo-code', removePromoCode);
   app.post('/api/cart/validate', validateCart);
+
+  // Profile routes with authentication
+app.get('/api/profile', authenticate, requireVerified, getProfile);
+app.put('/api/profile', authenticate, requireVerified, validateProfileUpdate, updateProfile);
+app.post('/api/profile/upload-picture', authenticate, requireVerified, rateLimit(10, 60000), uploadProfilePicture);
+app.post('/api/profile/change-password', authenticate, requireVerified, validatePasswordChange, changePassword);
+app.get('/api/profile/settings', authenticate, requireVerified, getSettings);
+app.put('/api/profile/settings', authenticate, requireVerified, updateSettings);
+app.get('/api/profile/activity', authenticate, requireVerified, getActivityLogs);
+app.delete('/api/profile/delete-account', authenticate, requireVerified, rateLimit(1, 300000), deleteAccount);
 
   return app;
 }

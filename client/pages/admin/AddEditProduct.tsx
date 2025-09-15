@@ -181,7 +181,7 @@ const AddEditProduct: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Success - redirect to products page
-      navigate('/admin/products', { 
+      navigate('/admin/products-management', { 
         state: { 
           message: `Product ${isEditing ? 'updated' : 'created'} successfully!` 
         }
@@ -210,7 +210,7 @@ const AddEditProduct: React.FC = () => {
       <div className="flex items-start sm:items-center justify-between">
         <div className="flex items-start sm:items-center space-x-3 sm:space-x-4">
           <button
-            onClick={() => navigate('/admin/products')}
+            onClick={() => navigate('/admin/products-management')}
             className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation flex-shrink-0"
           >
             <ArrowLeft size={20} />
@@ -531,7 +531,7 @@ const AddEditProduct: React.FC = () => {
         <div className="flex items-center justify-between pt-6 border-t border-gray-200">
           <button
             type="button"
-            onClick={() => navigate('/admin/products')}
+            onClick={() => navigate('/admin/products-management')}
             className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-montserrat font-medium"
           >
             Cancel

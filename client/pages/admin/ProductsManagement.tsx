@@ -187,14 +187,6 @@ const ProductsManagement: React.FC = () => {
               <span>Filters</span>
               {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
-
-            <Link
-              to="/admin/add-product"
-              className="flex items-center justify-center space-x-2 px-4 py-3 bg-gpp-blue text-white rounded-lg hover:bg-gpp-navy transition-colors font-montserrat touch-manipulation"
-            >
-              <Plus size={20} />
-              <span>Add Product</span>
-            </Link>
           </div>
         </div>
 
@@ -207,7 +199,8 @@ const ProductsManagement: React.FC = () => {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat text-base"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat text-base min-h-[48px] touch-manipulation"
+                  aria-label="Filter by status"
                 >
                   {statuses.map(status => (
                     <option key={status} value={status}>{status}</option>
@@ -219,7 +212,8 @@ const ProductsManagement: React.FC = () => {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat text-base"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat text-base min-h-[48px] touch-manipulation"
+                  aria-label="Filter by category"
                 >
                   {categories.map(category => (
                     <option key={category} value={category}>{category}</option>
@@ -293,12 +287,13 @@ const ProductsManagement: React.FC = () => {
                         <p className="text-xs text-gray-500 mb-2">Added {product.dateAdded}</p>
                       </div>
                       <div className="flex items-center space-x-1 ml-2" role="group" aria-label="Product actions">
-                        <button
+                        <Link
+                          to={`/admin/add-product/${product.id}`}
                           className="p-2 text-gray-400 hover:text-gpp-blue transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-gpp-blue focus:ring-offset-2 rounded"
                           aria-label={`Edit ${product.title}`}
                         >
                           <Edit size={16} aria-hidden="true" />
-                        </button>
+                        </Link>
                         <button
                           onClick={() => handleDeleteProduct(product.id)}
                           className="p-2 text-gray-400 hover:text-red-600 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"
@@ -417,12 +412,13 @@ const ProductsManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2" role="group" aria-label="Product actions">
-                      <button
+                      <Link
+                        to={`/admin/add-product/${product.id}`}
                         className="p-1 text-gray-400 hover:text-gpp-blue transition-colors focus:outline-none focus:ring-2 focus:ring-gpp-blue focus:ring-offset-2 rounded"
                         aria-label={`Edit ${product.title}`}
                       >
                         <Edit size={16} aria-hidden="true" />
-                      </button>
+                      </Link>
                       <button
                         onClick={() => handleDeleteProduct(product.id)}
                         className="p-1 text-gray-400 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"

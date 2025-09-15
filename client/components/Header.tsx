@@ -80,18 +80,20 @@ export default function Header() {
           {/* Icons */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <button 
-              className="hover:text-gray-600 transition-colors p-1"
+              className="hover:text-gray-600 transition-colors p-3 rounded-md hover:bg-gray-100 touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center"
               onClick={() => setIsSearchOpen(true)}
               title="Search"
+              aria-label="Search products"
             >
-              <Search size={18} className="sm:w-5 sm:h-5" />
+              <Search size={20} />
             </button>
             <Link 
               to="/cart" 
-              className="relative hover:text-gray-600 transition-colors p-1" 
+              className="relative hover:text-gray-600 transition-colors p-3 rounded-md hover:bg-gray-100 touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center" 
               title="Shopping Cart"
+              aria-label={`Shopping cart with ${summary?.itemCount || 0} items`}
             >
-              <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
+              <ShoppingCart size={20} />
               {summary?.itemCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
                   {summary?.itemCount > 99 ? '99+' : summary?.itemCount}
@@ -125,13 +127,13 @@ export default function Header() {
                       </Link>
                     )}
                     <hr className="my-1 border-gray-200" />
-                    <a
-                      href="#"
+                    <Link
+                      to="/profile"
                       className="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 font-montserrat transition-colors"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       My Profile
-                    </a>
+                    </Link>
                     <a
                       href="#"
                       className="block px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 font-montserrat transition-colors"
@@ -165,8 +167,10 @@ export default function Header() {
             
             {/* Mobile menu button */}
             <button 
-              className="lg:hidden hover:text-gray-600 transition-colors p-1"
+              className="lg:hidden hover:text-gray-600 transition-colors p-3 rounded-md hover:bg-gray-100 touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <Menu size={20} className="sm:w-6 sm:h-6" />}
             </button>
@@ -176,37 +180,37 @@ export default function Header() {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <nav className="lg:hidden mt-3 sm:mt-4 border-t border-gray-300 pt-3 sm:pt-4">
-            <div className="flex flex-col space-y-2 sm:space-y-3">
-              <Link to="/" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1">
+            <div className="flex flex-col space-y-1">
+              <Link to="/" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation">
                 Home
               </Link>
-              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 cursor-pointer rounded-md hover:bg-gray-50 touch-manipulation">
                 Category
               </div>
-              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 cursor-pointer rounded-md hover:bg-gray-50 touch-manipulation">
                 How To Buy
               </div>
-              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 cursor-pointer rounded-md hover:bg-gray-50 touch-manipulation">
                 Contact Us
               </div>
-              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1 cursor-pointer">
+              <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 cursor-pointer rounded-md hover:bg-gray-50 touch-manipulation">
                 About
               </div>
               
               {/* Mobile Auth Section */}
-              <hr className="my-2 sm:my-3 border-gray-300" />
+              <hr className="my-3 border-gray-300" />
               {!isAuthenticated ? (
                 <>
                   <Link
                     to="/login"
-                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/signup"
-                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Create Account
@@ -217,30 +221,30 @@ export default function Header() {
                   {isOwner && (
                     <Link
                       to="/admin"
-                      className="flex items-center font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
+                      className="flex items-center font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Shield className="h-4 w-4 mr-2" />
                       Admin Dashboard
                     </Link>
                   )}
-                  <a
-                    href="#"
-                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
+                  <Link
+                    to="/profile"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     My Profile
-                  </a>
+                  </Link>
                   <a
                     href="#"
-                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     My Orders
                   </a>
                   <a
                     href="#"
-                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm sm:text-base py-1"
+                    className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Account Settings
@@ -251,7 +255,7 @@ export default function Header() {
                       setIsMobileMenuOpen(false);
                       navigate('/');
                     }}
-                    className="flex items-center font-montserrat font-semibold hover:text-gray-600 transition-colors text-left text-sm sm:text-base py-1"
+                    className="flex items-center font-montserrat font-semibold hover:text-gray-600 transition-colors text-left text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation w-full"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
@@ -270,21 +274,22 @@ export default function Header() {
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 font-montserrat">Search Products</h3>
                 <button 
                   onClick={() => setIsSearchOpen(false)}
-                  className="text-gray-500 hover:text-gray-700 p-1"
+                  className="text-gray-500 hover:text-gray-700 p-3 rounded-md hover:bg-gray-100 touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center"
+                  aria-label="Close search"
                 >
-                  <X size={18} className="sm:w-5 sm:h-5" />
+                  <X size={20} />
                 </button>
               </div>
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search for car parts..."
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent text-gray-900 text-sm sm:text-base font-montserrat"
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent text-gray-900 text-base font-montserrat min-h-[48px] touch-manipulation"
                   autoFocus
                 />
-                <Search className="absolute right-2 sm:right-3 top-2 sm:top-2.5 text-gray-400" size={18} />
+                <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               </div>
-              <button className="w-full mt-3 sm:mt-4 bg-gpp-blue text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base font-montserrat font-semibold">
+              <button className="w-full mt-4 bg-gpp-blue text-white py-4 px-4 rounded-lg hover:bg-blue-600 transition-colors text-base font-montserrat font-semibold min-h-[48px] touch-manipulation">
                 Search
               </button>
             </div>

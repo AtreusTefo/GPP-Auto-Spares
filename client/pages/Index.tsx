@@ -4,28 +4,102 @@ import ProductSection from '../components/ProductSection';
 import PartsGrid from '../components/PartsGrid';
 import CategorySection from '../components/CategorySection';
 import Footer from '../components/Footer';
+import { Product } from '../../shared/types';
 
 export default function Index() {
   // Sample product data for the sections
-  const featuredProducts = [
-    { productCode: 'P8004400', description: 'MAZDA AXELA 1.5 1.8L ENGINE', price: 8500, category: 'Engines', inStock: true },
-    { productCode: 'P8004401', description: 'VW POLO 6R 1.6T ENGINE', price: 12500, category: 'Engines', inStock: true },
-    { productCode: 'P10000', description: 'VW POLO 6R SIDE MIRRORS', price: 1200, category: 'Body Parts', inStock: true },
-    { productCode: 'P8000450', description: 'VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP', price: 950, category: 'Fuel System', inStock: true },
+  const usedProducts: Product[] = [
+    {
+      id: 'P8000',
+      title: 'MAZDA AXELA 1.5 1.8L ENGINE',
+      price: 8000,
+      status: 'Active',
+      category: 'Engines',
+      image: '/Images/MAZDA AXELA 1.5 1.8 L ENGINE.png',
+      dateAdded: '2024-01-15',
+      views: 145,
+      stock: 2
+    },
+    {
+      id: 'P8001',
+      title: 'VW POLO 6R 1.6T ENGINE',
+      price: 8000,
+      status: 'Active',
+      category: 'Engines',
+      image: '/Images/VW POLO 6R 1.6T ENGINE.png',
+      dateAdded: '2024-01-12',
+      views: 98,
+      stock: 1
+    },
+    {
+      id: 'P1000',
+      title: 'VW POLO 6R SIDE MIRRORS',
+      price: 1000,
+      status: 'Active',
+      category: 'Exteriors',
+      image: '/Images/VW 6R SIDE MIRRORS.png',
+      dateAdded: '2024-01-10',
+      views: 67,
+      stock: 3
+    },
+    {
+      id: 'P850',
+      title: 'VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP',
+      price: 850,
+      status: 'Active',
+      category: 'Fuel Systems',
+      image: '/Images/VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP.png',
+      dateAdded: '2024-01-08',
+      views: 89,
+      stock: 4
+    },
   ];
 
-  const usedProducts = [
-    { productCode: 'P8000', description: 'MAZDA AXELA 1.5 1.8L ENGINE', imageUrl: '/Images/MAZDA AXELA 1.5 1.8 L ENGINE.png', price: 8000, category: 'Engines', inStock: true },
-    { productCode: 'P8001', description: 'VW POLO 6R 1.6T ENGINE', imageUrl: '/Images/VW POLO 6R 1.6T ENGINE.png', price: 8000, category: 'Engines', inStock: true },
-    { productCode: 'P1000', description: 'VW POLO 6R SIDE MIRRORS', imageUrl: '/Images/VW 6R SIDE MIRRORS.png', price: 1000, category: 'Body Parts', inStock: true },
-    { productCode: 'P850', description: 'VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP', imageUrl: '/Images/VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP.png', price: 850, category: 'Fuel System', inStock: true },
-  ];
-
-  const brandNewProducts = [
-    { productCode: 'P8002', description: 'MAZDA AXELA 1.5 1.8L ENGINE', price: 15000, category: 'Engines', inStock: true },
-    { productCode: 'P10000', description: 'VW POLO 6R 1.6T ENGINE', price: 18500, category: 'Engines', inStock: true },
-    { productCode: 'P1001', description: 'VW POLO 6R SIDE MIRRORS', price: 1500, category: 'Body Parts', inStock: true },
-    { productCode: 'P851', description: 'VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP', price: 1200, category: 'Fuel System', inStock: false },
+  const brandNewProducts: Product[] = [
+    {
+      id: 'P8002',
+      title: 'MAZDA AXELA 1.5 1.8L ENGINE (Brand New)',
+      price: 15000,
+      status: 'Active',
+      category: 'Engines',
+      image: '/Images/MAZDA AXELA 1.5 1.8 L ENGINE.png',
+      dateAdded: '2024-01-14',
+      views: 234,
+      stock: 1
+    },
+    {
+      id: 'P10000',
+      title: 'VW POLO 6R 1.6T ENGINE (Brand New)',
+      price: 18500,
+      status: 'Active',
+      category: 'Engines',
+      image: '/Images/VW POLO 6R 1.6T ENGINE.png',
+      dateAdded: '2024-01-13',
+      views: 189,
+      stock: 2
+    },
+    {
+      id: 'P1001',
+      title: 'VW POLO 6R SIDE MIRRORS (Brand New)',
+      price: 1500,
+      status: 'Active',
+      category: 'Exteriors',
+      image: '/Images/VW 6R SIDE MIRRORS.png',
+      dateAdded: '2024-01-11',
+      views: 156,
+      stock: 5
+    },
+    {
+      id: 'P851',
+      title: 'VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP (Brand New)',
+      price: 1200,
+      status: 'Active',
+      category: 'Fuel Systems',
+      image: '/Images/VW GOLF 5 & 6 GTI VW POLO 6R FUEL PUMP.png',
+      dateAdded: '2024-01-09',
+      views: 78,
+      stock: 0
+    },
   ];
 
   return (

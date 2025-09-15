@@ -1,8 +1,11 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const heroRef = useRef(null);
   
   const slides = [
     {
@@ -33,8 +36,37 @@ export default function Hero() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  // Touch handlers for swipe functionality
+  const handleTouchStart = (e) => {
+    setTouchEnd(0); // Reset touchEnd
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+  };
+
   return (
-    <section className="relative h-64 sm:h-80 md:h-96 bg-gray-900 overflow-hidden">
+    <section 
+      ref={heroRef}
+      className="relative h-72 sm:h-80 md:h-96 lg:h-[500px] bg-gray-900 overflow-hidden touch-pan-y"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Background images */}
       {slides.map((slide, index) => (
         <div
@@ -59,11 +91,11 @@ export default function Hero() {
         </button>
 
         {/* Main content */}
-        <div className="text-center text-white px-2 sm:px-4 flex-1 flex flex-col justify-center items-center">
-          <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold font-montserrat mb-2 sm:mb-4 leading-tight text-center">
+        <div className="text-center text-white px-4 sm:px-6 md:px-8 flex-1 flex flex-col justify-center items-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold font-montserrat mb-3 sm:mb-4 md:mb-6 leading-tight text-center max-w-4xl">
             {slides[currentSlide].title}
           </h1>
-          <p className="text-sm sm:text-base md:text-xl lg:text-2xl font-montserrat text-center">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-montserrat text-center max-w-2xl opacity-90">
             {slides[currentSlide].subtitle}
           </p>
         </div>
@@ -78,14 +110,15 @@ export default function Hero() {
       </div>
 
       {/* Slide indicators */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
+            className={`w-4 h-4 sm:w-3 sm:h-3 rounded-full transition-colors touch-manipulation ${
               index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'
-            }`}
+            } hover:bg-opacity-75`}
+            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>
