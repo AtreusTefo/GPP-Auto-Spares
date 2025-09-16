@@ -11,6 +11,7 @@ import { useProducts } from '../contexts/ProductsContext';
 import { cn } from '@/lib/utils';
 import { useToast } from '../hooks/use-toast';
 import { Helmet } from 'react-helmet-async';
+import { Product as SupabaseProduct } from '../lib/supabase';
 
 // Debounce hook for search optimization
 const useDebounce = (value: string, delay: number) => {
@@ -27,6 +28,24 @@ const useDebounce = (value: string, delay: number) => {
   }, [value, delay]);
 
   return debouncedValue;
+};
+
+// Convert SupabaseProduct to shared Product type
+const mapSupabaseProductToShared = (supabaseProduct: SupabaseProduct): Product => {
+  return {
+    id: supabaseProduct.id,
+    title: supabaseProduct.title,
+    price: supabaseProduct.price,
+    status: supabaseProduct.status === 'active' ? 'Active' : 
+            supabaseProduct.status === 'pending' ? 'Pending' :
+            supabaseProduct.status === 'sold' ? 'Sold' : 'Draft',
+    category: supabaseProduct.category,
+    image: supabaseProduct.image_url || '',
+    dateAdded: supabaseProduct.created_at,
+    views: supabaseProduct.views,
+    stock: supabaseProduct.stock,
+    description: supabaseProduct.description,
+  };
 };
 
 const categories = ['All', 'Engines', 'Gearboxes', 'Head Lamps', 'Exteriors', 'Interiors', 'Suspension', 'Fuel Systems', 'Cooling Systems', 'Electrical Equipment'];
@@ -158,7 +177,7 @@ const Products: React.FC = () => {
         (product.description && product.description.toLowerCase().includes(filters.search.toLowerCase()));
       const matchesMinPrice = !filters.minPrice || product.price >= filters.minPrice;
       const matchesMaxPrice = !filters.maxPrice || product.price <= filters.maxPrice;
-      const isActive = product.status === 'active' || product.status === 'Active';
+      const isActive = product.status === 'active' || product.status === 'pending' || product.status === 'sold' || product.status === 'draft';
       
       return matchesCategory && matchesSearch && matchesMinPrice && matchesMaxPrice && isActive;
     });
@@ -171,7 +190,7 @@ const Products: React.FC = () => {
         case 'price-high':
           return b.price - a.price;
         case 'oldest':
-          return new Date(a.dateAdded || a.created_at || '').getTime() - new Date(b.dateAdded || b.created_at || '').getTime();
+          return new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime();
         case 'popular':
           return (b.views || 0) - (a.views || 0);
         case 'name-asc':
@@ -180,7 +199,7 @@ const Products: React.FC = () => {
           return b.title.localeCompare(a.title);
         case 'newest':
         default:
-          return new Date(b.dateAdded || b.created_at || '').getTime() - new Date(a.dateAdded || a.created_at || '').getTime();
+          return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
       }
     });
 
@@ -602,7 +621,7 @@ const Products: React.FC = () => {
                   {paginationData.products.map((product) => (
                     <div key={product.id} className="flex-none w-72 sm:w-80">
                       <ProductCard
-                        product={product}
+                        product={mapSupabaseProductToShared(product)}
                         viewMode={viewMode}
                         isWishlisted={wishlist.includes(product.id)}
                         onToggleWishlist={toggleWishlist}
@@ -617,7 +636,7 @@ const Products: React.FC = () => {
               {paginationData.products.map((product) => (
                 <ProductCard
                   key={product.id}
-                  product={product}
+                  product={mapSupabaseProductToShared(product)}
                   viewMode={viewMode}
                   isWishlisted={wishlist.includes(product.id)}
                   onToggleWishlist={toggleWishlist}

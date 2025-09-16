@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Plus, Heart, Eye } from 'lucide-react';
+import { ShoppingCart, Plus, Heart, Eye, Loader2 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/use-toast';
@@ -21,8 +21,15 @@ export default function ProductCard({
   isWishlisted = false,
   onToggleWishlist
 }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart, isLoading, error, isInCart, getItemQuantity } = useCart();
   const { toast } = useToast();
+  const [isAddingToCart, setIsAddingToCart] = React.useState(false);
+  
+  // Check if item is in cart and get current quantity
+  const itemInCart = isInCart(product.id);
+  const currentQuantity = getItemQuantity(product.id);
+  const maxQuantity = product.stock || 0;
+  const canAddMore = !itemInCart || currentQuantity < maxQuantity;
   
   // Create a simple slug from product title for the URL
   const productSlug = product.title.replace(/\s+/g, '-').toLowerCase();
@@ -31,28 +38,49 @@ export default function ProductCard({
     e.preventDefault(); // Prevent navigation when clicking the button
     e.stopPropagation();
     
-    const cartProduct = {
-      id: product.id,
-      productCode: product.id,
-      description: product.title,
-      price: product.price,
-      imageUrl: product.image,
-      category: product.category,
-      inStock: (product.stock || 0) > 0
-    };
-    
-    const success = await addToCart(cartProduct, 1);
-    if (success) {
+    // Check stock before attempting to add
+    if (isOutOfStock) {
       toast({
-        title: "Added to cart",
-        description: `${product.title} has been added to your cart`
-      });
-    } else {
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart",
+        title: "Out of Stock",
+        description: `${product.title} is currently out of stock`,
         variant: "destructive"
       });
+      return;
+    }
+    
+    setIsAddingToCart(true);
+    
+    try {
+      const cartProduct = {
+        id: product.id,
+        productCode: product.id,
+        description: product.title,
+        price: product.price,
+        imageUrl: product.image,
+        category: product.category,
+        inStock: (product.stock || 0) > 0,
+        maxQuantity: product.stock || undefined
+      };
+      
+      const success = await addToCart(cartProduct, 1);
+      if (success) {
+        toast({
+          title: "✅ Added to cart",
+          description: `${product.title} has been added to your cart`,
+          duration: 3000
+        });
+      } else {
+        // Get the specific error message from cart context
+        const errorMessage = error || "Failed to add item to cart. Please try again.";
+        toast({
+          title: "❌ Cannot add to cart",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 4000
+        });
+      }
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -156,12 +184,18 @@ export default function ProductCard({
                 </Link>
                 <Button 
                   onClick={handleAddToCart}
-                  disabled={isOutOfStock}
+                  disabled={isOutOfStock || isAddingToCart || !canAddMore}
                   size="sm"
                   className="font-montserrat"
                 >
-                  <ShoppingCart size={16} className="mr-1" />
-                  Add to Cart
+                  {isAddingToCart ? (
+                    <Loader2 size={16} className="mr-1 animate-spin" />
+                  ) : (
+                    <ShoppingCart size={16} className="mr-1" />
+                  )}
+                  {isAddingToCart ? "Adding..." : 
+                   itemInCart ? (canAddMore ? `Add More (${currentQuantity}/${maxQuantity})` : `In Cart (${currentQuantity}/${maxQuantity})`) : 
+                   "Add to Cart"}
                 </Button>
               </div>
             </div>
@@ -242,12 +276,19 @@ export default function ProductCard({
 
         <Button 
           onClick={handleAddToCart}
-          disabled={isOutOfStock}
+          disabled={isOutOfStock || isAddingToCart || !canAddMore}
           className="w-full font-montserrat"
           size="sm"
         >
-          <ShoppingCart size={16} className="mr-2" />
-          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+          {isAddingToCart ? (
+            <Loader2 size={16} className="mr-2 animate-spin" />
+          ) : (
+            <ShoppingCart size={16} className="mr-2" />
+          )}
+          {isOutOfStock ? "Out of Stock" : 
+           isAddingToCart ? "Adding..." : 
+           itemInCart ? (canAddMore ? `Add More (${currentQuantity}/${maxQuantity})` : `In Cart (${currentQuantity}/${maxQuantity})`) : 
+           "Add to Cart"}
         </Button>
       </div>
     </div>

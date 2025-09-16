@@ -169,42 +169,152 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { user, isAuthenticated } = useAuth();
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Load cart data on mount and when auth state changes
+  // Load cart data from localStorage on mount
   useEffect(() => {
-    refreshCart();
+    const loadPersistedCart = () => {
+      try {
+        const persistedCart = localStorage.getItem('gpp_cart_data');
+        if (persistedCart) {
+          const cartData = JSON.parse(persistedCart);
+          
+          // Validate persisted cart data structure
+          if (cartData && typeof cartData === 'object') {
+            const validatedData = {
+              items: Array.isArray(cartData.items) ? cartData.items : [],
+              savedItems: Array.isArray(cartData.savedItems) ? cartData.savedItems : [],
+              summary: cartData.summary || {
+                subtotal: 0,
+                discount: 0,
+                tax: 0,
+                shipping: 0,
+                total: 0,
+                itemCount: 0
+              },
+              appliedPromoCode: cartData.appliedPromoCode
+            };
+            dispatch({ type: 'SET_CART_DATA', payload: validatedData });
+          }
+        }
+      } catch (error) {
+        console.error('Error loading persisted cart:', error);
+        localStorage.removeItem('gpp_cart_data');
+      }
+    };
+
+    loadPersistedCart();
+    if (isAuthenticated) {
+      refreshCart();
+    }
   }, [isAuthenticated, user]);
+
+  // Persist cart data to localStorage whenever cart state changes
+  useEffect(() => {
+    if ((state.items?.length > 0) || (state.savedItems?.length > 0)) {
+      try {
+        const cartData = {
+          items: state.items || [],
+          savedItems: state.savedItems || [],
+          summary: state.summary,
+          appliedPromoCode: state.appliedPromoCode
+        };
+        localStorage.setItem('gpp_cart_data', JSON.stringify(cartData));
+      } catch (error) {
+        console.error('Error persisting cart data:', error);
+      }
+    } else {
+      localStorage.removeItem('gpp_cart_data');
+    }
+  }, [state.items, state.savedItems, state.summary, state.appliedPromoCode]);
 
   const refreshCart = async (): Promise<void> => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const cartData = await apiCall('/cart');
-      dispatch({ type: 'SET_CART_DATA', payload: cartData });
+      const response = await apiCall('/cart');
+      
+      // Extract cart data from server response structure
+      const cartData = response.success ? response.data : response;
+      
+      // Validate cart data structure
+      if (cartData && typeof cartData === 'object') {
+        const validatedData = {
+          items: Array.isArray(cartData.items) ? cartData.items : [],
+          savedItems: Array.isArray(cartData.savedItems) ? cartData.savedItems : [],
+          summary: cartData.summary || {
+            subtotal: 0,
+            discount: 0,
+            tax: 0,
+            shipping: 0,
+            total: 0,
+            itemCount: 0
+          },
+          appliedPromoCode: cartData.appliedPromoCode
+        };
+        
+        // Only update cart if server has data or local cart is empty
+        // This prevents overwriting local cart with empty server data
+        const hasServerData = validatedData.items.length > 0 || validatedData.savedItems.length > 0;
+        const hasLocalData = (state.items?.length || 0) > 0 || (state.savedItems?.length || 0) > 0;
+        
+        if (hasServerData || !hasLocalData) {
+          dispatch({ type: 'SET_CART_DATA', payload: validatedData });
+        }
+      }
     } catch (error) {
       console.error('Error loading cart:', error);
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to load cart' });
+      // Don't clear cart on error - preserve local data
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
 
 
   const addToCart = async (product: Product, quantity: number = 1): Promise<boolean> => {
-     try {
-       dispatch({ type: 'SET_LOADING', payload: true });
-       
-       await apiCall('/cart/add', {
-         method: 'POST',
-         body: JSON.stringify({ product, quantity })
-       });
-       
-       // Refresh cart data after adding
-       await refreshCart();
-       return true;
-     } catch (error) {
-       console.error('Error adding to cart:', error);
-       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to add item to cart' });
-       return false;
-     }
-   };
+    try {
+      // Validate stock availability
+      if (!product.inStock) {
+        dispatch({ type: 'SET_ERROR', payload: 'Product is out of stock' });
+        return false;
+      }
+
+      // Check if item already exists in cart
+      const existingItem = state.items?.find(item => item.product.id === product.id);
+      const currentQuantity = existingItem ? existingItem.quantity : 0;
+      const newQuantity = currentQuantity + quantity;
+
+      // Check maximum quantity limits
+      if (product.maxQuantity && newQuantity > product.maxQuantity) {
+        const availableQuantity = product.maxQuantity - currentQuantity;
+        if (availableQuantity <= 0) {
+          dispatch({ type: 'SET_ERROR', payload: `This item is already at maximum quantity (${product.maxQuantity}) in your cart` });
+          return false;
+        } else {
+          // Adjust quantity to maximum available
+          quantity = availableQuantity;
+          dispatch({ type: 'SET_ERROR', payload: `Only ${availableQuantity} items added (max: ${product.maxQuantity})` });
+        }
+      }
+
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      await apiCall('/cart/add', {
+        method: 'POST',
+        body: JSON.stringify({ product, quantity })
+      });
+      
+      // Refresh cart data after adding
+      await refreshCart();
+      return true;
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      return false;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
 
   const removeFromCart = async (itemId: string): Promise<boolean> => {
      try {
@@ -357,28 +467,36 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const getItemQuantity = (productId: string): number => {
-    const item = state.items.find(item => item.product.id === productId);
+    const item = state.items?.find(item => item.product.id === productId);
     return item ? item.quantity : 0;
   };
 
   const isInCart = (productId: string): boolean => {
-    return state.items.some(item => item.product.id === productId);
+    return state.items?.some(item => item.product.id === productId) || false;
   };
 
   const validateCart = async (): Promise<boolean> => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       
-      const cartData = await apiCall('/cart/validate', {
+      const response = await apiCall('/cart/validate', {
         method: 'POST'
       });
       
-      dispatch({ type: 'SET_CART_DATA', payload: cartData });
-      return true;
+      // Handle validation response - it returns success/errors, not cart data
+      if (response.success === false && response.validationErrors) {
+        dispatch({ type: 'SET_ERROR', payload: response.validationErrors.join(', ') });
+      }
+      
+      // Refresh cart to get updated data after validation
+      await refreshCart();
+      return response.success !== false;
     } catch (error) {
       console.error('Error validating cart:', error);
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to validate cart' });
       return false;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 

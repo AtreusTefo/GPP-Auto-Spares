@@ -169,15 +169,30 @@ export function addToCart(req: Request, res: Response) {
       
       // Check max quantity limit
       if (product.maxQuantity && newQuantity > product.maxQuantity) {
-        return res.status(400).json({ 
-          success: false, 
-          error: `Maximum quantity of ${product.maxQuantity} exceeded` 
-        });
+        const availableQuantity = product.maxQuantity - items[existingItemIndex].quantity;
+        if (availableQuantity <= 0) {
+          return res.status(400).json({ 
+            success: false, 
+            error: `This item is already at maximum quantity (${product.maxQuantity}) in your cart` 
+          });
+        } else {
+          return res.status(400).json({ 
+            success: false, 
+            error: `Only ${availableQuantity} more can be added (max: ${product.maxQuantity})` 
+          });
+        }
       }
       
       items[existingItemIndex].quantity = newQuantity;
     } else {
-      // Add new item
+      // Add new item - check max quantity limit
+      if (product.maxQuantity && quantity > product.maxQuantity) {
+        return res.status(400).json({ 
+          success: false, 
+          error: `Cannot add ${quantity} items. Maximum quantity allowed is ${product.maxQuantity}` 
+        });
+      }
+      
       const cartItem: CartItem = {
         id: `${userId}_${product.id}_${Date.now()}`,
         product,

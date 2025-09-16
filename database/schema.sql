@@ -78,16 +78,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create triggers for updated_at
+DROP TRIGGER IF EXISTS trigger_profiles_updated_at ON public.profiles;
 CREATE TRIGGER trigger_profiles_updated_at
     BEFORE UPDATE ON public.profiles
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS trigger_products_updated_at ON public.products;
 CREATE TRIGGER trigger_products_updated_at
     BEFORE UPDATE ON public.products
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS trigger_orders_updated_at ON public.orders;
 CREATE TRIGGER trigger_orders_updated_at
     BEFORE UPDATE ON public.orders
     FOR EACH ROW
@@ -118,6 +121,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Create trigger for automatic profile creation
+DROP TRIGGER IF EXISTS trigger_handle_new_user ON auth.users;
 CREATE TRIGGER trigger_handle_new_user
     AFTER INSERT ON auth.users
     FOR EACH ROW
@@ -132,39 +136,50 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
 CREATE POLICY "Users can view their own profile" ON public.profiles
     FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile" ON public.profiles
     FOR UPDATE USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
 CREATE POLICY "Users can insert their own profile" ON public.profiles
     FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Products policies
+DROP POLICY IF EXISTS "Anyone can view active products" ON public.products;
 CREATE POLICY "Anyone can view active products" ON public.products
     FOR SELECT USING (status = 'active' OR auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Authenticated users can create products" ON public.products;
 CREATE POLICY "Authenticated users can create products" ON public.products
     FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
+DROP POLICY IF EXISTS "Users can update their own products" ON public.products;
 CREATE POLICY "Users can update their own products" ON public.products
     FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own products" ON public.products;
 CREATE POLICY "Users can delete their own products" ON public.products
     FOR DELETE USING (auth.uid() = user_id);
 
 -- Orders policies
+DROP POLICY IF EXISTS "Users can view their own orders" ON public.orders;
 CREATE POLICY "Users can view their own orders" ON public.orders
     FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create their own orders" ON public.orders;
 CREATE POLICY "Users can create their own orders" ON public.orders
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own orders" ON public.orders;
 CREATE POLICY "Users can update their own orders" ON public.orders
     FOR UPDATE USING (auth.uid() = user_id);
 
 -- Order items policies
+DROP POLICY IF EXISTS "Users can view their own order items" ON public.order_items;
 CREATE POLICY "Users can view their own order items" ON public.order_items
     FOR SELECT USING (
         EXISTS (
@@ -174,6 +189,7 @@ CREATE POLICY "Users can view their own order items" ON public.order_items
         )
     );
 
+DROP POLICY IF EXISTS "Users can create order items for their orders" ON public.order_items;
 CREATE POLICY "Users can create order items for their orders" ON public.order_items
     FOR INSERT WITH CHECK (
         EXISTS (
@@ -191,9 +207,9 @@ GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
 
 -- Insert sample data (optional)
 INSERT INTO public.products (title, description, price, category, image_url, stock, status, views) VALUES
-('Sample Product 1', 'This is a sample product description', 29.99, 'Electronics', 'https://via.placeholder.com/300x300', 10, 'active', 0),
-('Sample Product 2', 'Another sample product with different category', 49.99, 'Clothing', 'https://via.placeholder.com/300x300', 5, 'active', 0),
-('Sample Product 3', 'Third sample product for testing', 19.99, 'Books', 'https://via.placeholder.com/300x300', 15, 'active', 0)
+('Sample Product 1', 'This is a sample product description', 29.99, 'Electronics', '/placeholder.svg', 10, 'active', 0),
+('Sample Product 2', 'Another sample product with different category', 49.99, 'Clothing', '/placeholder.svg', 5, 'active', 0),
+('Sample Product 3', 'Third sample product for testing', 19.99, 'Books', '/placeholder.svg', 15, 'active', 0)
 ON CONFLICT DO NOTHING;
 
 -- Comments for documentation

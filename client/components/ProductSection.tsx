@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { Product } from '../../shared/types';
@@ -10,6 +11,8 @@ interface ProductSectionProps {
 }
 
 export default function ProductSection({ title, products, backgroundColor = 'bg-gray-50' }: ProductSectionProps) {
+  const navigate = useNavigate();
+  
   // Carousel state
   const gridRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -62,7 +65,10 @@ export default function ProductSection({ title, products, backgroundColor = 'bg-
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 font-montserrat">
             {title}
           </h2>
-          <button className="bg-gpp-blue text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-montserrat font-semibold hover:bg-gpp-navy transition-colors text-base sm:text-lg self-center sm:self-auto touch-manipulation min-h-[48px]">
+          <button 
+            onClick={() => navigate('/products')}
+            className="bg-gpp-blue text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-montserrat font-semibold hover:bg-gpp-navy transition-colors text-base sm:text-lg self-center sm:self-auto touch-manipulation min-h-[48px]"
+          >
             View All
           </button>
         </div>
