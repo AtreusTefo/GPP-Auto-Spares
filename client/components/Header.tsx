@@ -63,6 +63,9 @@ export default function Header() {
             <Link to="/" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base">
               Home
             </Link>
+            <Link to="/products" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base">
+              Products
+            </Link>
             <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-sm xl:text-base cursor-pointer">
               Category
             </div>
@@ -183,6 +186,9 @@ export default function Header() {
             <div className="flex flex-col space-y-1">
               <Link to="/" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation">
                 Home
+              </Link>
+              <Link to="/products" className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 rounded-md hover:bg-gray-50 touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>
+                Products
               </Link>
               <div className="font-montserrat font-semibold hover:text-gray-600 transition-colors text-base py-3 px-2 cursor-pointer rounded-md hover:bg-gray-50 touch-manipulation">
                 Category

@@ -1,201 +1,345 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Search, Filter, Grid, List, SlidersHorizontal, Heart, RefreshCw, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Pagination from '../components/Pagination';
 import { Product, ProductFilters, PaginationInfo } from '../../shared/types';
+import { useProducts } from '../contexts/ProductsContext';
 import { cn } from '@/lib/utils';
+import { useToast } from '../hooks/use-toast';
+import { Helmet } from 'react-helmet-async';
 
-// Mock products data - in a real app, this would come from an API
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    title: 'VW Golf 6 GTI DSG 6 Speed Automatic Gearbox',
-    price: 25000,
-    status: 'Active',
-    category: 'Gearboxes',
-    image: '/Images/Golf 6 GTI DSG 6 speed automatic gearbox.png',
-    dateAdded: '2024-01-15',
-    views: 234,
-    stock: 2
-  },
-  {
-    id: '2',
-    title: 'MAZDA AXELA 1.5 1.8 L ENGINE',
-    price: 18500,
-    status: 'Active',
-    category: 'Engines',
-    image: '/Images/MAZDA AXELA 1.5 1.8 L ENGINE.png',
-    dateAdded: '2024-01-12',
-    views: 189,
-    stock: 1
-  },
-  {
-    id: '3',
-    title: 'VW POLO 6R 1.6T ENGINE',
-    price: 22000,
-    status: 'Active',
-    category: 'Engines',
-    image: '/Images/VW POLO 6R 1.6T ENGINE.png',
-    dateAdded: '2024-01-10',
-    views: 156,
-    stock: 3
-  },
-  {
-    id: '4',
-    title: 'BMW Head Lamps Set',
-    price: 3500,
-    status: 'Active',
-    category: 'Head Lamps',
-    image: '/Images/Head Lamps.png',
-    dateAdded: '2024-01-08',
-    views: 98,
-    stock: 4
-  },
-  {
-    id: '5',
-    title: 'VW 6R Side Mirrors',
-    price: 1200,
-    status: 'Active',
-    category: 'Exteriors',
-    image: '/Images/VW 6R SIDE MIRRORS.png',
-    dateAdded: '2024-01-05',
-    views: 45,
-    stock: 6
-  },
-  {
-    id: '6',
-    title: 'Mazda Head Lamps',
-    price: 2800,
-    status: 'Active',
-    category: 'Head Lamps',
-    image: '/Images/Mazda HL.png',
-    dateAdded: '2024-01-03',
-    views: 67,
-    stock: 2
-  }
-];
+// Debounce hook for search optimization
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
-const categories = ['All', 'Engines', 'Gearboxes', 'Head Lamps', 'Exteriors', 'Interiors', 'Suspension'];
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+const categories = ['All', 'Engines', 'Gearboxes', 'Head Lamps', 'Exteriors', 'Interiors', 'Suspension', 'Fuel Systems', 'Cooling Systems', 'Electrical Equipment'];
 const sortOptions = [
   { value: 'newest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
   { value: 'price-low', label: 'Price: Low to High' },
   { value: 'price-high', label: 'Price: High to Low' },
-  { value: 'popular', label: 'Most Popular' }
+  { value: 'popular', label: 'Most Popular' },
+  { value: 'name-asc', label: 'Name A-Z' },
+  { value: 'name-desc', label: 'Name Z-A' }
 ];
 
 const Products: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { products, loading, error, fetchProducts, subscribeToProducts, unsubscribeFromProducts } = useProducts();
+  const { toast } = useToast();
+  
+  // State management
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [filters, setFilters] = useState<ProductFilters>({
-    category: 'All',
-    search: '',
-    minPrice: undefined,
-    maxPrice: undefined
+    category: searchParams.get('category') || 'All',
+    search: searchParams.get('search') || '',
+    minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
+    maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined
   });
-  const [sortBy, setSortBy] = useState('newest');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
+  const [wishlist, setWishlist] = useState<string[]>([]);
   const itemsPerPage = 12;
 
-  // Simulate API call
+  // Carousel state and refs
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  // Debounced search for performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  // Initialize data and subscriptions
   useEffect(() => {
-    const loadProducts = async () => {
-      setLoading(true);
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setProducts(mockProducts);
-      setLoading(false);
+    const initializeProducts = async () => {
+      try {
+        await fetchProducts({ status: 'active' });
+        subscribeToProducts();
+      } catch (err) {
+        console.error('Failed to initialize products:', err);
+        toast({
+          title: "Error",
+          description: "Failed to load products. Please try again.",
+          variant: "destructive",
+        });
+      }
     };
 
-    loadProducts();
+    initializeProducts();
+
+    return () => {
+      unsubscribeFromProducts();
+    };
   }, []);
 
-  // Filter and sort products
-  const filteredProducts = React.useMemo(() => {
+  // Update URL parameters when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.category && filters.category !== 'All') params.set('category', filters.category);
+    if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
+    if (filters.minPrice) params.set('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice) params.set('maxPrice', filters.maxPrice.toString());
+    if (sortBy !== 'newest') params.set('sort', sortBy);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    
+    setSearchParams(params);
+  }, [filters, debouncedSearchTerm, sortBy, currentPage, setSearchParams]);
+
+  // Update search filter when debounced term changes
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, search: debouncedSearchTerm }));
+    setCurrentPage(1); // Reset to first page on search
+  }, [debouncedSearchTerm]);
+
+  // Wishlist management
+  const toggleWishlist = useCallback((productId: string) => {
+    setWishlist(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  }, []);
+
+  // Carousel scroll functions
+  const updateScrollButtons = useCallback(() => {
+    if (gridRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = gridRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  }, []);
+
+  const scrollLeft = useCallback(() => {
+    if (gridRef.current) {
+      const cardWidth = gridRef.current.children[0]?.getBoundingClientRect().width || 300;
+      const gap = 24; // 6 * 4px (gap-6)
+      const scrollAmount = cardWidth + gap;
+      gridRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  }, []);
+
+  const scrollRight = useCallback(() => {
+    if (gridRef.current) {
+      const cardWidth = gridRef.current.children[0]?.getBoundingClientRect().width || 300;
+      const gap = 24; // 6 * 4px (gap-6)
+      const scrollAmount = cardWidth + gap;
+      gridRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }, []);
+
+  // Filter and sort products with memoization for performance
+  const filteredProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+    
     let filtered = products.filter(product => {
-      // Category filter
-      if (filters.category && filters.category !== 'All' && product.category !== filters.category) {
-        return false;
-      }
-
-      // Search filter
-      if (filters.search) {
-        const searchTerm = filters.search.toLowerCase();
-        if (!product.title.toLowerCase().includes(searchTerm) && 
-            !product.category.toLowerCase().includes(searchTerm)) {
-          return false;
-        }
-      }
-
-      // Price filters
-      if (filters.minPrice && product.price < filters.minPrice) {
-        return false;
-      }
-      if (filters.maxPrice && product.price > filters.maxPrice) {
-        return false;
-      }
-
-      // Only show active products with stock
-      return product.status === 'Active' && product.stock > 0;
+      const matchesCategory = filters.category === 'All' || product.category === filters.category;
+      const matchesSearch = !filters.search || 
+        product.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+        product.category.toLowerCase().includes(filters.search.toLowerCase()) ||
+        (product.description && product.description.toLowerCase().includes(filters.search.toLowerCase()));
+      const matchesMinPrice = !filters.minPrice || product.price >= filters.minPrice;
+      const matchesMaxPrice = !filters.maxPrice || product.price <= filters.maxPrice;
+      const isActive = product.status === 'active' || product.status === 'Active';
+      
+      return matchesCategory && matchesSearch && matchesMinPrice && matchesMaxPrice && isActive;
     });
 
     // Sort products
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'newest':
-          return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-        case 'oldest':
-          return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
         case 'price-low':
           return a.price - b.price;
         case 'price-high':
           return b.price - a.price;
+        case 'oldest':
+          return new Date(a.dateAdded || a.created_at || '').getTime() - new Date(b.dateAdded || b.created_at || '').getTime();
         case 'popular':
-          return b.views - a.views;
+          return (b.views || 0) - (a.views || 0);
+        case 'name-asc':
+          return a.title.localeCompare(b.title);
+        case 'name-desc':
+          return b.title.localeCompare(a.title);
+        case 'newest':
         default:
-          return 0;
+          return new Date(b.dateAdded || b.created_at || '').getTime() - new Date(a.dateAdded || a.created_at || '').getTime();
       }
     });
 
     return filtered;
   }, [products, filters, sortBy]);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
-  
-  const paginationInfo: PaginationInfo = {
-    currentPage,
-    totalPages,
-    totalItems: filteredProducts.length,
-    itemsPerPage
-  };
+  // Pagination with memoization
+  const paginationData = useMemo(() => {
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleFilterChange = (key: keyof ProductFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setCurrentPage(1); // Reset to first page when filters change
-  };
+    return {
+      products: paginatedProducts,
+      pagination: {
+        currentPage,
+        totalPages,
+        totalItems: filteredProducts.length,
+        itemsPerPage
+      } as PaginationInfo
+    };
+  }, [filteredProducts, currentPage, itemsPerPage]);
 
-  const handlePageChange = (page: number) => {
+  // Update scroll buttons when products change or on scroll
+  useEffect(() => {
+    updateScrollButtons();
+    const handleScroll = () => updateScrollButtons();
+    const gridElement = gridRef.current;
+    
+    if (gridElement) {
+      gridElement.addEventListener('scroll', handleScroll);
+      return () => gridElement.removeEventListener('scroll', handleScroll);
+    }
+  }, [updateScrollButtons, paginationData.products]);
+
+  // Update scroll buttons when window resizes
+  useEffect(() => {
+    const handleResize = () => updateScrollButtons();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [updateScrollButtons]);
+
+  // Event handlers with useCallback for performance
+
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const clearFilters = () => {
+  const handleRefresh = useCallback(async () => {
+    try {
+      await fetchProducts({ status: 'active' });
+      toast({
+        title: "Success",
+        description: "Products refreshed successfully.",
+      });
+    } catch (err) {
+      console.error('Failed to refresh products:', err);
+      toast({
+        title: "Error",
+        description: "Failed to refresh products. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [fetchProducts, toast]);
+
+  // SEO meta data
+  useEffect(() => {
+    const title = filters.category !== 'All' 
+      ? `${filters.category} - GPP Auto Spares`
+      : 'Auto Parts & Spares - GPP Auto Spares';
+    
+    const description = filters.search
+      ? `Search results for "${filters.search}" in auto parts and spares`
+      : `Browse our extensive collection of ${filters.category !== 'All' ? filters.category.toLowerCase() : 'auto parts and spares'}. Quality guaranteed.`;
+
+    document.title = title;
+    
+    // Update meta description
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.setAttribute('name', 'description');
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute('content', description);
+  }, [filters.category, filters.search]);
+
+  const clearFilters = useCallback(() => {
     setFilters({
       category: 'All',
       search: '',
       minPrice: undefined,
       maxPrice: undefined
     });
+    setSearchTerm('');
     setCurrentPage(1);
-  };
+  }, []);
+
+  // Event handlers with useCallback for performance
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchTerm(value);
+  }, []);
+
+  const handleFilterChange = useCallback((updates: Partial<ProductFilters>) => {
+    setFilters(prev => ({ ...prev, ...updates }));
+    setCurrentPage(1);
+  }, []);
+
+  const handleSortChange = useCallback((value: string) => {
+    setSortBy(value);
+  }, []);
+
+  // SEO and meta data - must be before any conditional returns
+  const pageTitle = useMemo(() => {
+    const parts = ['Products'];
+    if (filters.category && filters.category !== 'All') {
+      parts.unshift(filters.category);
+    }
+    if (filters.search) {
+      parts.unshift(`"${filters.search}"`);
+    }
+    parts.push('GPP Auto Spares');
+    return parts.join(' - ');
+  }, [filters.category, filters.search]);
+
+  const metaDescription = useMemo(() => {
+    let description = 'Browse our extensive collection of quality auto parts and accessories at GPP Auto Spares.';
+    if (filters.category && filters.category !== 'All') {
+      description = `Shop ${filters.category} parts and accessories at GPP Auto Spares.`;
+    }
+    if (filters.search) {
+      description = `Search results for "${filters.search}" at GPP Auto Spares.`;
+    }
+    return description;
+  }, [filters.category, filters.search]);
+
+  // Error boundary fallback
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center">
+            <AlertCircle className="mx-auto h-16 w-16 text-red-500 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+            <p className="text-gray-600 mb-6">We couldn't load the products. Please try again.</p>
+            <button
+              onClick={handleRefresh}
+              className="bg-gpp-blue text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-montserrat"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -210,17 +354,58 @@ const Products: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <meta name="keywords" content="auto parts, car parts, automotive accessories, spare parts, GPP Auto Spares" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={`${window.location.origin}/products${searchParams.toString() ? `?${searchParams.toString()}` : ''}`} />
+        
+        {/* Structured data for products */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": pageTitle,
+            "description": metaDescription,
+            "url": `${window.location.origin}/products`,
+            "mainEntity": {
+              "@type": "ItemList",
+              "numberOfItems": filteredProducts.length,
+              "itemListElement": filteredProducts.slice(0, 10).map((product, index) => ({
+                "@type": "Product",
+                "position": index + 1,
+                "name": product.title,
+                "description": product.description || product.title,
+                "offers": {
+                  "@type": "Offer",
+                  "price": product.price,
+                  "priceCurrency": "ZAR",
+                  "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+                }
+              }))
+            }
+          })}
+        </script>
+      </Helmet>
+
+      <div className="min-h-screen bg-gray-50">
+        <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 font-montserrat mb-2">
-            Our Products
+            {filters.category !== 'All' ? filters.category : 'Our Products'}
           </h1>
           <p className="text-gray-600 font-montserrat">
-            Browse our extensive collection of quality auto parts
+            {filters.search 
+              ? `Search results for "${filters.search}"`
+              : 'Browse our extensive collection of quality auto parts'
+            }
           </p>
         </div>
 
@@ -233,9 +418,10 @@ const Products: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                value={filters.search || ''}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat"
+                aria-label="Search products"
               />
             </div>
           </div>
@@ -279,7 +465,7 @@ const Products: React.FC = () => {
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => handleSortChange(e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat text-base min-h-[48px] touch-manipulation"
                 aria-label="Sort products"
               >
@@ -303,8 +489,9 @@ const Products: React.FC = () => {
                   </label>
                   <select
                     value={filters.category || 'All'}
-                    onChange={(e) => handleFilterChange('category', e.target.value)}
+                    onChange={(e) => handleFilterChange({ category: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat"
+                    aria-label="Filter by category"
                   >
                     {categories.map(category => (
                       <option key={category} value={category}>
@@ -317,27 +504,29 @@ const Products: React.FC = () => {
                 {/* Price Range */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 font-montserrat">
-                    Min Price
+                    Min Price (R)
                   </label>
                   <input
                     type="number"
                     placeholder="0"
                     value={filters.minPrice || ''}
-                    onChange={(e) => handleFilterChange('minPrice', e.target.value ? Number(e.target.value) : undefined)}
+                    onChange={(e) => handleFilterChange({ minPrice: e.target.value ? Number(e.target.value) : undefined })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat"
+                    min="0"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 font-montserrat">
-                    Max Price
+                    Max Price (R)
                   </label>
                   <input
                     type="number"
                     placeholder="No limit"
                     value={filters.maxPrice || ''}
-                    onChange={(e) => handleFilterChange('maxPrice', e.target.value ? Number(e.target.value) : undefined)}
+                    onChange={(e) => handleFilterChange({ maxPrice: e.target.value ? Number(e.target.value) : undefined })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gpp-blue focus:border-transparent font-montserrat"
+                    min="0"
                   />
                 </div>
               </div>
@@ -357,26 +546,85 @@ const Products: React.FC = () => {
         {/* Results Info */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-gray-600 font-montserrat">
-            Showing {paginatedProducts.length} of {filteredProducts.length} products
+            Showing {paginationData.products.length} of {filteredProducts.length} products
           </p>
+          <button
+            onClick={handleRefresh}
+            className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gpp-blue transition-colors font-montserrat rounded-lg hover:bg-gray-50"
+            aria-label="Refresh products"
+          >
+            <RefreshCw size={16} />
+            <span>Refresh</span>
+          </button>
         </div>
 
         {/* Products Grid/List */}
-        {paginatedProducts.length > 0 ? (
-          <div className={cn(
-            'mb-8',
-            viewMode === 'grid' 
-              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-              : 'space-y-4'
-          )}>
-            {paginatedProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                viewMode={viewMode}
-              />
-            ))}
-          </div>
+        {paginationData.products.length > 0 ? (
+          viewMode === 'grid' ? (
+            <div className="relative mb-8">
+              {/* Left Arrow */}
+              <button
+                onClick={scrollLeft}
+                className={cn(
+                  'absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 transition-all duration-200 hover:shadow-xl',
+                  canScrollLeft 
+                    ? 'text-gray-700 hover:text-gpp-blue cursor-pointer' 
+                    : 'text-gray-300 cursor-not-allowed opacity-50'
+                )}
+                disabled={!canScrollLeft}
+                aria-label="Scroll left"
+              >
+                <ChevronLeft size={24} />
+              </button>
+
+              {/* Right Arrow */}
+              <button
+                onClick={scrollRight}
+                className={cn(
+                  'absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 transition-all duration-200 hover:shadow-xl',
+                  canScrollRight 
+                    ? 'text-gray-700 hover:text-gpp-blue cursor-pointer' 
+                    : 'text-gray-300 cursor-not-allowed opacity-50'
+                )}
+                disabled={!canScrollRight}
+                aria-label="Scroll right"
+              >
+                <ChevronRight size={24} />
+              </button>
+
+              {/* Scrollable Grid Container */}
+              <div 
+                ref={gridRef}
+                className="overflow-x-auto scrollbar-hide px-12"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                <div className="flex gap-6 pb-4">
+                  {paginationData.products.map((product) => (
+                    <div key={product.id} className="flex-none w-72 sm:w-80">
+                      <ProductCard
+                        product={product}
+                        viewMode={viewMode}
+                        isWishlisted={wishlist.includes(product.id)}
+                        onToggleWishlist={toggleWishlist}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4 mb-8">
+              {paginationData.products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  viewMode={viewMode}
+                  isWishlisted={wishlist.includes(product.id)}
+                  onToggleWishlist={toggleWishlist}
+                />
+              ))}
+            </div>
+          )
         ) : (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
@@ -398,17 +646,18 @@ const Products: React.FC = () => {
         )}
 
         {/* Pagination */}
-        {paginatedProducts.length > 0 && totalPages > 1 && (
+        {paginationData.products.length > 0 && paginationData.pagination.totalPages > 1 && (
           <Pagination
-            paginationInfo={paginationInfo}
+            paginationInfo={paginationData.pagination}
             onPageChange={handlePageChange}
             className="mt-8"
           />
         )}
       </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 };
 
